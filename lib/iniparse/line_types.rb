@@ -172,6 +172,10 @@ module IniParse
     # Represents a blank line. Used so that we can preserve blank lines when
     # writing back to the file.
     class Blank < Line
+      def blank?
+        true
+      end
+
       def self.parse(line, opts)
         if line.blank?
           if opts[:comment].blank?
