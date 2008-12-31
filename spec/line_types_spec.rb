@@ -3,6 +3,20 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe "IniParse::LineTypes::Line" do
   Line = IniParse::LineTypes::Line
 
+  describe '#comment' do
+    it 'should return nil if there is no comment' do
+      Line.new(:comment => nil).comment.should be_nil
+    end
+
+    it 'should return the comment if there is one' do
+      Line.new(:comment => 'comment', :comment_sep => ';').comment.should == '; comment'
+    end
+
+    it 'should allow a custom comment sepator' do
+      Line.new(:comment => 'comment', :comment_sep => '#').comment.should == '# comment'
+    end
+  end
+
   describe '.sanitize_line' do
     def sanitize_line(line)
       Line.sanitize_line(line)

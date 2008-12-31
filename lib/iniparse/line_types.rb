@@ -15,6 +15,21 @@ module IniParse
       # Holds options for this line.
       attr_accessor :opts
 
+      # ==== Parameters
+      # opts<Hash>:: Extra options for the line.
+      #
+      def initialize(opts)
+        @opts = opts
+      end
+
+      # Returns the inline comment for this line. Includes the comment
+      # separator at the beginning of the string.
+      def comment
+        unless @opts[:comment].blank?
+          '%s %s' % [@opts[:comment_sep], @opts[:comment]]
+        end
+      end
+
       # Parses a given line from an INI document.
       #
       # ==== Returns
@@ -157,13 +172,6 @@ module IniParse
     # Represents a blank line. Used so that we can preserve blank lines when
     # writing back to the file.
     class Blank < Line
-      # ==== Parameters
-      # opts<Hash>:: Extra options for the line.
-      #
-      def initialize(opts)
-        @opts = opts
-      end
-
       def self.parse(line, opts)
         if line.blank?
           if opts[:comment].blank?
