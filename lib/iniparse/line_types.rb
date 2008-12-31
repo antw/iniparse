@@ -37,7 +37,7 @@ module IniParse
       # nil::  nil is returned if there was no match.
       #
       def self.parse(line, opts)
-        raise NameError, <<-EOS.compress_lines
+        raise NotImplementedError, <<-EOS.compress_lines
           Line is an abstract class from which other line types should
           inherit; please don't use it directly.
         EOS

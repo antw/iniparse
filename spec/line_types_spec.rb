@@ -17,6 +17,12 @@ describe "IniParse::LineTypes::Line" do
     end
   end
 
+  describe '.parse' do
+    it 'should raise NotImplementedError' do
+      lambda { Line.parse('', {}) }.should raise_error(NotImplementedError)
+    end
+  end
+
   describe '.sanitize_line' do
     def sanitize_line(line)
       Line.sanitize_line(line)
