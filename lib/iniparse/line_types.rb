@@ -12,13 +12,16 @@ module IniParse
         :line           => nil
       }.freeze
 
+      # Holds options for this line.
+      attr_accessor :opts
+
       # Parses a given line from an INI document.
       #
       # ==== Returns
       # Line:: If the line matched a Line type, it will be returned.
       # nil::  nil is returned if there was no match.
       #
-      def self.parse(line)
+      def self.parse(line, opts)
         raise NameError, <<-EOS.compress_lines
           Line is an abstract class from which other line types should
           inherit; please don't use it directly.
@@ -100,6 +103,26 @@ module IniParse
     #   ...
     #
     class Section < Line
+      @regex = /^\[        # Opening bracket
+                 ([^\]]+)  # Section name
+                 \]$       # Closing bracket
+               /x
+
+      attr_accessor :name
+
+      # ==== Parameters
+      # name<String>:: The section name.
+      # opts<Hash>::   Extra options for the line.
+      #
+      def initialize(name, opts)
+        @name, @opts = name, opts
+      end
+
+      def self.parse(line, opts)
+        if m = @regex.match(line)
+          new(m[1], opts)
+        end
+      end
     end
 
     # Represents probably the most common type of line in an INI document:
@@ -108,11 +131,48 @@ module IniParse
     #   key = value
     #
     class Option < Line
+      @regex = /^(.*)     # Key
+                 =
+                 (.*?)$   # Value
+               /x
+
+      attr_accessor :key, :value
+
+      # ==== Parameters
+      # key<String>::   The option key.
+      # value<String>:: The value for this option.
+      # opts<Hash>::    Extra options for the line.
+      #
+      def initialize(key, value, opts)
+        @key, @value, @opts = key, value, opts
+      end
+
+      def self.parse(line, opts)
+        if m = @regex.match(line)
+          new(m[1], m[2], opts)
+        end
+      end
     end
 
     # Represents a blank line. Used so that we can preserve blank lines when
     # writing back to the file.
     class Blank < Line
+      # ==== Parameters
+      # opts<Hash>:: Extra options for the line.
+      #
+      def initialize(opts)
+        @opts = opts
+      end
+
+      def self.parse(line, opts)
+        if line.blank?
+          if opts[:comment].blank?
+            new(opts)
+          else
+            Comment.new(opts)
+          end
+        end
+      end
     end
 
     # Represents a comment. Comment lines begin with a semi-colon or hash.

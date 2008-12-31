@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe "IniParse::LineTypes::Line" do
   Line = IniParse::LineTypes::Line
 
-  describe '#sanitize_line' do
+  describe '.sanitize_line' do
     def sanitize_line(line)
       Line.sanitize_line(line)
     end
@@ -100,5 +100,133 @@ describe "IniParse::LineTypes::Line" do
         sanitize_line(@line)[1][:comment_offset].should == 8
       end
     end
+  end
+end
+
+#
+# Section
+#
+
+describe 'IniParse::LineTypes::Section.parse' do
+  def parse(line, opts = {})
+    IniParse::LineTypes::Section.parse(line, opts)
+  end
+
+  it 'should match "[section]"' do
+    line = parse('[section]')
+    line.should be_kind_of(IniParse::LineTypes::Section)
+    line.name.should == 'section'
+  end
+
+  it 'should match "[section with whitespace]"' do
+    line = parse('[section with whitespace]')
+    line.should be_kind_of(IniParse::LineTypes::Section)
+    line.name.should == 'section with whitespace'
+  end
+
+  it 'should not match "key = value"' do
+    parse('key = value').should be_nil
+  end
+
+  it 'should not match ""' do
+    parse('').should be_nil
+  end
+
+  it 'should not match " "' do
+    parse(' ').should be_nil
+  end
+end
+
+#
+# Option
+#
+
+describe 'IniParse::LineTypes::Option.parse' do
+  def parse(line, opts = {})
+    IniParse::LineTypes::Option.parse(line, opts)
+  end
+
+  it 'should not match "[section]"' do
+    parse('[section]').should be_nil
+  end
+
+  it 'should not match "[section with whitespace]"' do
+    parse('[section with whitespace]').should be_nil
+  end
+
+  it 'should match "key = value"' do
+    line = parse('key = value')
+    line.key   = 'key'
+    line.value = 'value'
+  end
+
+  it 'should match "key=value"' do
+    line = parse('key=value')
+    line.key   = 'key'
+    line.value = 'value'
+  end
+
+  it 'should match "key =value"' do
+    line = parse('key =value')
+    line.key   = 'key'
+    line.value = 'value'
+  end
+
+  it 'should match "key= value"' do
+    line = parse('key= value')
+    line.key   = 'key'
+    line.value = 'value'
+  end
+
+  it 'should match "key   =   value"' do
+    line = parse('key   =   value')
+    line.key   = 'key'
+    line.value = 'value'
+  end
+
+  it 'should not match ""' do
+    parse('').should be_nil
+  end
+
+  it 'should not match " "' do
+    parse(' ').should be_nil
+  end
+end
+
+#
+# Blank
+#
+
+describe 'IniParse::LineTypes::Blank.parse' do
+  def parse(line, opts = {})
+    IniParse::LineTypes::Blank.parse(line, opts)
+  end
+
+  it 'should not match "[section]"' do
+    parse('[section]').should be_nil
+  end
+
+  it 'should not match "[section with whitespace]"' do
+    parse('[section with whitespace]').should be_nil
+  end
+
+  it 'should match "key = value"' do
+    parse('key = value').should be_nil
+  end
+
+  it 'should return Blank when matching "" with no comment' do
+    parse('').should be_kind_of(IniParse::LineTypes::Blank)
+  end
+
+  it 'should return Blank when matching "" with no comment' do
+    parse(' ').should be_kind_of(IniParse::LineTypes::Blank)
+  end
+
+  it 'should return Comment when matching "" with a comment' do
+    parse('', :comment => 'c').should be_kind_of(IniParse::LineTypes::Comment)
+  end
+
+  it 'should return Comment when matching "" with a comment' do
+    parse(' ', :comment => 'c').should be_kind_of(IniParse::LineTypes::Comment)
   end
 end
