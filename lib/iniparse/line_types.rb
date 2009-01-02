@@ -174,7 +174,7 @@ module IniParse
           nil
         elsif /^-?\d+$/.match(value)
           Integer(value)
-        elsif /^-?\d+\.\d+$/.match(value)
+        elsif /^-?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i.match(value)
           Float(value)
         elsif /true/u.match(value)
           true

@@ -311,6 +311,24 @@ describe 'IniParse::LineTypes::Option.parse' do
   it 'should typecast negative float values to Float' do
     parse('key = -3.14159265').value.should == -3.14159265
   end
+
+  it 'should typecast scientific notation numbers to Float' do
+    parse('key = 10e5').value.should == 10e5
+    parse('key = 10e+5').value.should == 10e5
+    parse('key = 10e-5').value.should == 10e-5
+
+    parse('key = -10e5').value.should == -10e5
+    parse('key = -10e+5').value.should == -10e5
+    parse('key = -10e-5').value.should == -10e-5
+
+    parse('key = -3.14159265e5').value.should == -3.14159265e5
+    parse('key = -3.14159265e+5').value.should == -3.14159265e5
+    parse('key = -3.14159265e-5').value.should == -3.14159265e-5
+
+    parse('key = 3.14159265e5').value.should == 3.14159265e5
+    parse('key = 3.14159265e+5').value.should == 3.14159265e5
+    parse('key = 3.14159265e-5').value.should == 3.14159265e-5
+  end
 end
 
 #
