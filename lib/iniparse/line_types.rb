@@ -170,18 +170,13 @@ module IniParse
 
       # Attempts to typecast values.
       def self.typecast(value)
-        if value.blank?
-          nil
-        elsif /^-?\d+$/.match(value)
-          Integer(value)
-        elsif /^-?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i.match(value)
-          Float(value)
-        elsif /true/i.match(value)
-          true
-        elsif /false/i.match(value)
-          false
-        else
-          value
+        case value
+          when /^\s*$/                            then nil
+          when /^-?\d+$/                          then Integer(value)
+          when /^-?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i then Float(value)
+          when /true/i                            then true
+          when /false/i                           then false
+          else                                         value
         end
       end
     end
