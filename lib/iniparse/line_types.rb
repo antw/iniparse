@@ -80,7 +80,8 @@ module IniParse
       # Strips in inline comment from a line (or value), removes trailing
       # whitespace and sets the comment options as applicable.
       def self.strip_comment(line, opts)
-        if m = /^(.*?)(?:\s+(;|\#)\s*(.*))$/.match(line)
+        if m = /^(.*?)(?:\s+(;|\#)\s*(.*))$/.match(line) ||
+           m = /(^)(?:(;|\#)\s*(.*))$/.match(line) # Comment lines.
           opts = opts.merge(
             :comment        => m[3].rstrip,
             :comment_sep    => m[2],
@@ -164,7 +165,24 @@ module IniParse
 
       def self.parse(line, opts)
         if m = @regex.match(line)
-          new(m[1], m[2], opts)
+          new(m[1].strip, typecast(m[2].strip), opts)
+        end
+      end
+
+      # Attempts to typecast values.
+      def self.typecast(value)
+        if value.blank?
+          nil
+        elsif /^-?\d+$/.match(value)
+          Integer(value)
+        elsif /^-?\d+\.\d+$/.match(value)
+          Float(value)
+        elsif /true/u.match(value)
+          true
+        elsif /false/i.match(value)
+          false
+        else
+          value
         end
       end
     end
