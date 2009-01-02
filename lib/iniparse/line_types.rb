@@ -8,8 +8,7 @@ module IniParse
         :comment        => nil,
         :comment_sep    => nil,
         :comment_offset => 0,
-        :indent         => nil,
-        :line           => nil
+        :indent         => nil
       }.freeze
 
       # Holds options for this line.
