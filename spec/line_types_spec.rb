@@ -338,7 +338,7 @@ describe 'IniParse::LineTypes::Blank.parse' do
     parse('').should be_kind_of(IniParse::LineTypes::Blank)
   end
 
-  it 'should return Blank when matching "" with no comment' do
+  it 'should return Blank when matching " " with no comment' do
     parse(' ').should be_kind_of(IniParse::LineTypes::Blank)
   end
 
@@ -346,7 +346,7 @@ describe 'IniParse::LineTypes::Blank.parse' do
     parse('', :comment => 'c').should be_kind_of(IniParse::LineTypes::Comment)
   end
 
-  it 'should return Comment when matching "" with a comment' do
+  it 'should return Comment when matching " " with a comment' do
     parse(' ', :comment => 'c').should be_kind_of(IniParse::LineTypes::Comment)
   end
 end
