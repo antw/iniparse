@@ -176,7 +176,7 @@ module IniParse
           Integer(value)
         elsif /^-?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i.match(value)
           Float(value)
-        elsif /true/u.match(value)
+        elsif /true/i.match(value)
           true
         elsif /false/i.match(value)
           false

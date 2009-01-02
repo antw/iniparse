@@ -290,10 +290,12 @@ describe 'IniParse::LineTypes::Option.parse' do
 
   it 'should typecast "true" to TrueClass' do
     parse('key = true').value.should === true
+    parse('key = TRUE').value.should === true
   end
 
   it 'should typecast "false" to FalseClass' do
-    parse('key = true').value.should === true
+    parse('key = false').value.should === false
+    parse('key = FALSE').value.should === false
   end
 
   it 'should typecast integer values to Integer' do
