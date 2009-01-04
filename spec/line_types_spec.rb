@@ -274,6 +274,10 @@ describe 'IniParse::LineTypes::Option.parse' do
     parse('key_with_dashes = value').key.should == 'key_with_dashes'
   end
 
+  it 'should correctly parse key "key with spaces"' do
+    parse('key with spaces = value').key.should == 'key with spaces'
+  end
+
   it 'should not match ""' do
     parse('').should be_nil
   end
