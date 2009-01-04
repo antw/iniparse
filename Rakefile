@@ -29,13 +29,13 @@ spec = Gem::Specification.new do |s|
 
   # rdoc
   s.has_rdoc = true
-  s.extra_rdoc_files = %w(README LICENSE)
+  s.extra_rdoc_files = %w(README.md LICENSE)
 
   # Uncomment this to add a dependency
   # s.add_dependency "foo"
 
   s.require_path = 'lib'
-  s.files = %w(LICENSE README Rakefile) + Dir.glob("{lib,spec}/**/*")
+  s.files = %w(LICENSE README.md Rakefile) + Dir.glob("{lib,spec}/**/*")
 end
 
 
@@ -67,10 +67,11 @@ task :doc => ['doc:rdoc']
 namespace :doc do
 
   Rake::RDocTask.new do |rdoc|
-    rdoc.rdoc_files.add(%w(LICENSE README lib/**/*.rb))
-    rdoc.main = "README"
+    rdoc.rdoc_files.add(%w(LICENSE README.md lib/**/*.rb))
+    rdoc.main = "README.md"
     rdoc.title = "IniParse API Documentation"
     rdoc.options << "--line-numbers" << "--inline-source"
+    rdoc.rdoc_dir = 'doc'
   end
 
 end
