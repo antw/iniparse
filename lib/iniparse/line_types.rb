@@ -129,7 +129,7 @@ module IniParse
       # name<String>:: The section name.
       # opts<Hash>::   Extra options for the line.
       #
-      def initialize(name, opts)
+      def initialize(name, opts = {})
         @name, @opts = name, opts
       end
 
@@ -158,7 +158,7 @@ module IniParse
       # value<String>:: The value for this option.
       # opts<Hash>::    Extra options for the line.
       #
-      def initialize(key, value, opts)
+      def initialize(key, value, opts = {})
         @key, @value, @opts = key, value, opts
       end
 
@@ -188,7 +188,7 @@ module IniParse
         true
       end
 
-      def self.parse(line, opts)
+      def self.parse(line, opts = {})
         if line.blank?
           if opts[:comment].blank?
             new(opts)
