@@ -17,7 +17,7 @@ module IniParse
       # ==== Parameters
       # opts<Hash>:: Extra options for the line.
       #
-      def initialize(opts)
+      def initialize(opts = nil)
         @opts = opts
       end
 
@@ -188,10 +188,10 @@ module IniParse
         true
       end
 
-      def self.parse(line, opts = {})
+      def self.parse(line, opts)
         if line.blank?
           if opts[:comment].blank?
-            new(opts)
+            new
           else
             Comment.new(opts)
           end
