@@ -30,10 +30,10 @@ module IniParse
           memo ||= type.parse(sanitized, opts)
         end
 
-        case parsed.class.to_s
-        when 'IniParse::LineTypes::Section'
+        case parsed
+        when IniParse::LineTypes::Section
           current_section = parsed
-        when 'IniParse::LineTypes::Option'
+        when IniParse::LineTypes::Option
           if current_section.nil?
             # INI documents can't have options without a parent section.
             raise NoSectionError, <<-EOS.compress_lines
@@ -41,7 +41,7 @@ module IniParse
               declared: '#{line}' (line #{i+1}).
             EOS
           end
-        when 'IniParse::LineTypes::Blank', 'IniParse::LineTypes::Comment'
+        when IniParse::LineTypes::Blank, IniParse::LineTypes::Comment
           # Do nothing at the moment,
         else
           raise IniParse::ParseError, <<-EOS.compress_lines
