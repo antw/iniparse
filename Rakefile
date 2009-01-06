@@ -1,14 +1,19 @@
 require 'rubygems'
-require "rake/clean"
+require 'rake/clean'
 require 'rake/gempackagetask'
-require "rake/rdoctask"
 require 'rubygems/specification'
 require 'date'
 require 'spec/rake/spectask'
 
-require "lib/iniparse/version"
+begin
+  require 'hanna/rdoctask'
+rescue LoadError
+  require 'rake/rdoctask'
+end
 
-GEM = "iniparse"
+require 'lib/iniparse/version'
+
+GEM = 'iniparse'
 GEM_VERSION = IniParse::VERSION
 
 ##############################################################################
