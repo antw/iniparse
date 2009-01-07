@@ -1,9 +1,9 @@
 module IniParse
   class Parser
     cattr_accessor :parse_types
-    @@parse_types = [ IniParse::LineTypes::Option,
-                      IniParse::LineTypes::Section,
-                      IniParse::LineTypes::Blank ]
+    @@parse_types = [ IniParse::Lines::Option,
+                      IniParse::Lines::Section,
+                      IniParse::Lines::Blank ]
 
     # Creates a new Parser instance for parsing string +source+.
     #
@@ -24,16 +24,16 @@ module IniParse
       parsed_lines    = []
 
       @source.split("\n").each_with_index do |line, i|
-        sanitized, opts = IniParse::LineTypes::Line.sanitize_line(line)
+        sanitized, opts = IniParse::Lines::Line.sanitize_line(line)
 
         parsed = @@parse_types.reduce(nil) do |memo, type|
           memo ||= type.parse(sanitized, opts)
         end
 
         case parsed
-        when IniParse::LineTypes::Section
+        when IniParse::Lines::Section
           current_section = parsed
-        when IniParse::LineTypes::Option
+        when IniParse::Lines::Option
           if current_section.nil?
             # INI documents can't have options without a parent section.
             raise NoSectionError, <<-EOS.compress_lines
@@ -41,7 +41,7 @@ module IniParse
               declared: '#{line}' (line #{i+1}).
             EOS
           end
-        when IniParse::LineTypes::Blank, IniParse::LineTypes::Comment
+        when IniParse::Lines::Blank, IniParse::Lines::Comment
           # Do nothing at the moment,
         else
           raise IniParse::ParseError, <<-EOS.compress_lines

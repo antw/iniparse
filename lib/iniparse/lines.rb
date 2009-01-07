@@ -1,5 +1,5 @@
 module IniParse
-  module LineTypes
+  module Lines
     # A base class from which other line types should inherit.
     class Line
       # Default options for each Line.
@@ -206,5 +206,5 @@ module IniParse
     #
     class Comment < Blank
     end
-  end # LineTypes
+  end # Lines
 end # IniParse

@@ -39,9 +39,9 @@ module IniParse
     #
     def <<(line)
       case line
-      when IniParse::LineTypes::Section
+      when IniParse::Lines::Section
         self[line.name] = line
-      when IniParse::LineTypes::Option
+      when IniParse::Lines::Option
         self[line.key] = line
       else
         @lines << line

@@ -4,7 +4,7 @@ require 'extlib'
 dir = Pathname(__FILE__).dirname.expand_path / 'iniparse'
 
 require dir / 'line_collection'
-require dir / 'line_types'
+require dir / 'lines'
 require dir / 'parser'
 require dir / 'version'
 

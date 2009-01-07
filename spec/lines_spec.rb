@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe "IniParse::LineTypes::Line" do
-  Line = IniParse::LineTypes::Line
+describe "IniParse::Lines::Line" do
+  Line = IniParse::Lines::Line
 
   describe '#comment' do
     it 'should return nil if there is no comment' do
@@ -35,7 +35,7 @@ describe "IniParse::LineTypes::Line" do
 
     it 'should not change the default options' do
       lambda { sanitize_line(' m=y ; comment') }.should_not \
-        change(IniParse::LineTypes::Line, :default_opts)
+        change(IniParse::Lines::Line, :default_opts)
     end
 
     describe 'with "k = v"' do
@@ -159,32 +159,32 @@ end
 # Section
 #
 
-describe 'IniParse::LineTypes::Section#initialize' do
+describe 'IniParse::Lines::Section#initialize' do
   it 'should typecast the given name to a string' do
-    IniParse::LineTypes::Section.new(:symbol).name.should == 'symbol'
+    IniParse::Lines::Section.new(:symbol).name.should == 'symbol'
   end
 end
 
-describe 'IniParse::LineTypes::Section.parse' do
+describe 'IniParse::Lines::Section.parse' do
   def parse(line, opts = {})
-    IniParse::LineTypes::Section.parse(line, opts)
+    IniParse::Lines::Section.parse(line, opts)
   end
 
   it 'should match "[section]"' do
     line = parse('[section]')
-    line.should be_kind_of(IniParse::LineTypes::Section)
+    line.should be_kind_of(IniParse::Lines::Section)
     line.name.should == 'section'
   end
 
   it 'should match "[section with whitespace]"' do
     line = parse('[section with whitespace]')
-    line.should be_kind_of(IniParse::LineTypes::Section)
+    line.should be_kind_of(IniParse::Lines::Section)
     line.name.should == 'section with whitespace'
   end
 
   it 'should match "[  section with surounding whitespace  ]"' do
     line = parse('[  section with surounding whitespace  ]')
-    line.should be_kind_of(IniParse::LineTypes::Section)
+    line.should be_kind_of(IniParse::Lines::Section)
     line.name.should == '  section with surounding whitespace  '
   end
 
@@ -205,15 +205,15 @@ end
 # Option
 #
 
-describe 'Iniparse::LineTypes::Option#initialize' do
+describe 'Iniparse::Lines::Option#initialize' do
   it 'should typecast the given key to a string' do
-    IniParse::LineTypes::Option.new(:symbol, '').key.should == 'symbol'
+    IniParse::Lines::Option.new(:symbol, '').key.should == 'symbol'
   end
 end
 
-describe 'IniParse::LineTypes::Option.parse' do
+describe 'IniParse::Lines::Option.parse' do
   def parse(line, opts = {})
-    IniParse::LineTypes::Option.parse(line, opts)
+    IniParse::Lines::Option.parse(line, opts)
   end
 
   it 'should not match "[section]"' do
@@ -226,50 +226,50 @@ describe 'IniParse::LineTypes::Option.parse' do
 
   it 'should match "key = value"' do
     line = parse('key = value')
-    line.should be_kind_of(IniParse::LineTypes::Option)
+    line.should be_kind_of(IniParse::Lines::Option)
     line.key.should   == 'key'
     line.value.should == 'value'
   end
 
   it 'should match "key=value"' do
     line = parse('key=value')
-    line.should be_kind_of(IniParse::LineTypes::Option)
+    line.should be_kind_of(IniParse::Lines::Option)
     line.key.should   == 'key'
     line.value.should == 'value'
   end
 
   it 'should match "key =value"' do
     line = parse('key =value')
-    line.should be_kind_of(IniParse::LineTypes::Option)
+    line.should be_kind_of(IniParse::Lines::Option)
     line.key.should   == 'key'
     line.value.should == 'value'
   end
 
   it 'should match "key= value"' do
     line = parse('key= value')
-    line.should be_kind_of(IniParse::LineTypes::Option)
+    line.should be_kind_of(IniParse::Lines::Option)
     line.key.should   == 'key'
     line.value.should == 'value'
   end
 
   it 'should match "key   =   value"' do
     line = parse('key   =   value')
-    line.should be_kind_of(IniParse::LineTypes::Option)
+    line.should be_kind_of(IniParse::Lines::Option)
     line.key.should   == 'key'
     line.value.should == 'value'
   end
 
   it 'should match "key ="' do
-    parse('key =').should be_kind_of(IniParse::LineTypes::Option)
+    parse('key =').should be_kind_of(IniParse::Lines::Option)
   end
 
   it 'should match "key = "' do
-    parse('key =').should be_kind_of(IniParse::LineTypes::Option)
+    parse('key =').should be_kind_of(IniParse::Lines::Option)
   end
 
   it 'should correctly parse key "key.two"' do
     line = parse('key.two = value')
-    line.should be_kind_of(IniParse::LineTypes::Option)
+    line.should be_kind_of(IniParse::Lines::Option)
     line.key.should   == 'key.two'
     line.value.should == 'value'
   end
@@ -353,9 +353,9 @@ end
 # Blank
 #
 
-describe 'IniParse::LineTypes::Blank.parse' do
+describe 'IniParse::Lines::Blank.parse' do
   def parse(line, opts = {})
-    IniParse::LineTypes::Blank.parse(line, opts)
+    IniParse::Lines::Blank.parse(line, opts)
   end
 
   it 'should not match "[section]"' do
@@ -371,18 +371,18 @@ describe 'IniParse::LineTypes::Blank.parse' do
   end
 
   it 'should return Blank when matching "" with no comment' do
-    parse('').should be_kind_of(IniParse::LineTypes::Blank)
+    parse('').should be_kind_of(IniParse::Lines::Blank)
   end
 
   it 'should return Blank when matching " " with no comment' do
-    parse(' ').should be_kind_of(IniParse::LineTypes::Blank)
+    parse(' ').should be_kind_of(IniParse::Lines::Blank)
   end
 
   it 'should return Comment when matching "" with a comment' do
-    parse('', :comment => 'c').should be_kind_of(IniParse::LineTypes::Comment)
+    parse('', :comment => 'c').should be_kind_of(IniParse::Lines::Comment)
   end
 
   it 'should return Comment when matching " " with a comment' do
-    parse(' ', :comment => 'c').should be_kind_of(IniParse::LineTypes::Comment)
+    parse(' ', :comment => 'c').should be_kind_of(IniParse::Lines::Comment)
   end
 end
