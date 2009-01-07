@@ -48,6 +48,8 @@ module IniParse
       end
     end
 
+    alias_method :push, :<<
+
     # Enumerates through the collection.
     #
     # By default #each does not yield blank and comment lines.
