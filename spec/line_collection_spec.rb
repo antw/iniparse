@@ -5,16 +5,16 @@ describe "IniParse::LineCollection" do
   before(:each) do
     @collection = IniParse::LineCollection.new
     @collection << (@c1 = IniParse::LineTypes::Comment.new)
-    @collection << (@s1 = IniParse::Section.new('first section'))
-    @collection << (@s2 = IniParse::Section.new('second section'))
+    @collection << (@s1 = IniParse::LineTypes::Section.new('first section'))
+    @collection << (@s2 = IniParse::LineTypes::Section.new('second section'))
     @collection << (@b1 = IniParse::LineTypes::Blank.new)
-    @collection << (@s3 = IniParse::Section.new('third section'))
+    @collection << (@s3 = IniParse::LineTypes::Section.new('third section'))
     @collection << (@b2 = IniParse::LineTypes::Blank.new)
   end
 
   describe '#each' do
     it 'should remove blanks and comments by default' do
-      @collection.each { |l| l.should be_kind_of(IniParse::Section) }
+      @collection.each { |l| l.should be_kind_of(IniParse::LineTypes::Section) }
     end
 
     it 'should not remove blanks and comments if true is given' do
@@ -56,12 +56,18 @@ describe "IniParse::LineCollection" do
       # Make sure the old data is gone.
       @collection.detect { |s| s.name == 'second section' }.should be_nil
     end
+
+    it 'should typecast given keys to a string' do
+      s4 = IniParse::LineTypes::Section.new('fourth section')
+      @collection[:a_symbol] = s4
+      @collection['a_symbol'].should == s4
+    end
   end
 
   describe '#<<' do
     it 'should set the key correctly if given a Section' do
       @collection.should_not have_key('new section')
-      @collection << IniParse::Section.new('new section')
+      @collection << IniParse::LineTypes::Section.new('new section')
       @collection.should have_key('new section')
     end
 

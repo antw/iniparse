@@ -130,7 +130,7 @@ module IniParse
       # opts<Hash>::   Extra options for the line.
       #
       def initialize(name, opts = {})
-        @name, @opts = name, opts
+        @name, @opts = name.to_s, opts
       end
 
       def self.parse(line, opts)
@@ -159,7 +159,7 @@ module IniParse
       # opts<Hash>::    Extra options for the line.
       #
       def initialize(key, value, opts = {})
-        @key, @value, @opts = key, value, opts
+        @key, @value, @opts = key.to_s, value, opts
       end
 
       def self.parse(line, opts)

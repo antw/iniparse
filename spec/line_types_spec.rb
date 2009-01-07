@@ -159,6 +159,12 @@ end
 # Section
 #
 
+describe 'IniParse::LineTypes::Section#initialize' do
+  it 'should typecast the given name to a string' do
+    IniParse::LineTypes::Section.new(:symbol).name.should == 'symbol'
+  end
+end
+
 describe 'IniParse::LineTypes::Section.parse' do
   def parse(line, opts = {})
     IniParse::LineTypes::Section.parse(line, opts)
@@ -198,6 +204,12 @@ end
 #
 # Option
 #
+
+describe 'Iniparse::LineTypes::Option#initialize' do
+  it 'should typecast the given key to a string' do
+    IniParse::LineTypes::Option.new(:symbol, '').key.should == 'symbol'
+  end
+end
 
 describe 'IniParse::LineTypes::Option.parse' do
   def parse(line, opts = {})

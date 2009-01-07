@@ -21,10 +21,9 @@ module IniParse
     # If a value with the given key already exists, the value will be replaced
     # with the new one, with the new value taking the position of the old.
     #
-    # Note that if you pass a key already represented in the collection, the
-    # old item will be replaced.
-    #
     def []=(key, value)
+      key = key.to_s
+
       if has_key?(key)
         @lines[ @indicies[key] ] = value
       else
@@ -40,7 +39,7 @@ module IniParse
     #
     def <<(line)
       case line
-      when IniParse::Section
+      when IniParse::LineTypes::Section
         self[line.name] = line
       when IniParse::LineTypes::Option
         self[line.key] = line
@@ -65,10 +64,9 @@ module IniParse
     # Removes the value identified by +key+.
     def delete(key)
       unless (idx = @indicies[key]).nil?
-        ret = @lines.delete_at(idx)
         @indicies.delete(key)
         @indicies.each { |k,v| @indicies[k] = v -= 1 if v > idx }
-        ret
+        @lines.delete_at(idx)
       end
     end
 
