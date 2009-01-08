@@ -208,12 +208,10 @@ module IniParse
       #
       def merge!(other)
         other.lines.each(true) do |line|
-          if line.kind_of?(IniParse::Lines::Option)
-            @lines << line
-          elsif line.kind_of?(Array)
+          if line.kind_of?(Array)
             line.each { |duplicate| @lines << duplicate }
           else
-            @lines << line # Blank or Comment, just chuck it straight in.
+            @lines << line
           end
         end
       end
