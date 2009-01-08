@@ -26,6 +26,12 @@ IniParse::Test::Fixtures[:blank_before_section] = <<-FIX
   key = value
 FIX
 
+IniParse::Test::Fixtures[:blank_in_section] = <<-FIX
+  [first_section]
+
+  key = value
+FIX
+
 IniParse::Test::Fixtures[:option_before_section] = <<-FIX
   key = value
   [first_section]

@@ -17,11 +17,11 @@ module IniParse
     # Parses the source string and returns the resulting data structure.
     #
     # ==== Returns
-    # IniParse::LineCollection
+    # IniParse::Document
     #
-    def parse_raw
+    def parse
+      document        = IniParse::Document.new
       current_section = nil
-      parsed_lines    = []
 
       @source.split("\n").each_with_index do |line, i|
         sanitized, opts = IniParse::Lines::Line.sanitize_line(line)
@@ -33,6 +33,7 @@ module IniParse
         case parsed
         when IniParse::Lines::Section
           current_section = parsed
+          document.lines << parsed
         when IniParse::Lines::Option
           if current_section.nil?
             # INI documents can't have options without a parent section.
@@ -41,20 +42,18 @@ module IniParse
               declared: '#{line}' (line #{i+1}).
             EOS
           end
+          current_section.lines << parsed
         when IniParse::Lines::Blank, IniParse::Lines::Comment
-          # Do nothing at the moment,
+          ((current_section && current_section.lines) || document.lines) << parsed
         else
           raise IniParse::ParseError, <<-EOS.compress_lines
             A line of your INI document could not be parsed to a LineType:
             '#{line}' (line #{i+1}).
           EOS
         end
-
-        # All done, add the line to the stack.
-        parsed_lines << parsed
       end
 
-      parsed_lines
+      document
     end
   end
 end

@@ -28,12 +28,15 @@ module IniParse
 
   # Parse given given INI document source +source+.
   #
-  # See IniParse::Parser.parse_raw
+  # See IniParse::Parser.parse
   #
   # ==== Parameters
   # source<String>:: The source from the INI document.
   #
-  def parse_raw(source)
-    IniParse::Parser.new(source).parse_raw
+  # ==== Returns
+  # IniParse::Document
+  #
+  def parse(source)
+    IniParse::Parser.new(source).parse
   end
 end

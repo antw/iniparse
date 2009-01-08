@@ -1,29 +1,52 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe 'IniParse::Parser#parse_raw' do
-  def parse_raw(source)
-    IniParse::Parser.new(source).parse_raw
+describe 'IniParse::Parser#parse' do
+  def parse(source)
+    IniParse::Parser.new(source).parse
   end
 
-  it 'should return an array' do
-    parse_raw('').should == []
+  it 'should return an IniParse::Document' do
+    parse('').should be_kind_of(IniParse::Document)
+  end
+
+  describe 'with :comment_before_section fixture' do
+    before(:all) { @doc = parse(fixture(:comment_before_section)) }
+
+    it 'should have a comment as the first line' do
+      @doc.lines.to_a.first.should be_kind_of(IniParse::Lines::Comment)
+      @doc.lines.to_a.first.comment.should == '; This is a comment'
+    end
+
+    it 'should have one section' do
+      @doc['first_section'].should_not be_nil
+    end
+
+    it 'should have one option belonging to `first_section`' do
+      @doc['first_section']['key'].should == 'value'
+    end
   end
 
   it 'should allow comments to preceed the first section' do
-    lambda { parse_raw(fixture(:comment_before_section)) }.should_not raise_error
+    lambda { parse(fixture(:comment_before_section)) }.should_not raise_error
   end
 
   it 'should allow blank lines to preceed the first section' do
-    lambda { parse_raw(fixture(:blank_before_section)) }.should_not raise_error
+    lambda { @doc = parse(fixture(:blank_before_section)) }.should_not raise_error
+    @doc.lines.to_a.first.should be_kind_of(IniParse::Lines::Blank)
+  end
+
+  it 'should allow a blank line to belong to a section' do
+    lambda { @doc = parse(fixture(:blank_in_section)) }.should_not raise_error
+    @doc['first_section'].lines.to_a.first.should be_kind_of(IniParse::Lines::Blank)
   end
 
   it 'should raise an error if an option preceeds the first section' do
-    lambda { parse_raw(fixture(:option_before_section)) }.should \
+    lambda { parse(fixture(:option_before_section)) }.should \
       raise_error(IniParse::NoSectionError)
   end
-  
+
   it 'should raise ParseError if a line could not be parsed' do
-    lambda { parse_raw(fixture(:invalid_line)) }.should \
+    lambda { parse(fixture(:invalid_line)) }.should \
       raise_error(IniParse::ParseError)
   end
 end
