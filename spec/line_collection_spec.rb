@@ -177,6 +177,13 @@ describe 'IniParse::OptionCollection' do
       @collection['k'].should == [option_one, option_two]
     end
   end
+
+  describe '#keys' do
+    it 'should handle duplicates' do
+      @collection << IniParse::Lines::Option.new('first', 'v5')
+      @collection.keys.should == ['first', 'second', 'third']
+    end
+  end
 end
 
 describe 'IniParse::SectionCollection' do

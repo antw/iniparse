@@ -154,5 +154,11 @@ module IniParse
 
       self
     end
+
+    # Return an array containing the keys for the lines added to this
+    # collection.
+    def keys
+      map { |line| line.kind_of?(Array) ? line.first.key : line.key }
+    end
   end
 end
