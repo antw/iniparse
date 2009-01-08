@@ -18,7 +18,7 @@ describe 'IniParse::Parser#parse' do
     end
 
     it 'should have one section' do
-      @doc['first_section'].should_not be_nil
+      @doc.lines.keys.should == ['first_section']
     end
 
     it 'should have one option belonging to `first_section`' do
