@@ -4,7 +4,11 @@ module IniParse
       @@fixtures = {}
 
       def self.[](fix)
-        @@fixtures[fix]
+        if @@fixtures.has_key?(fix)
+          @@fixtures[fix]
+        else
+          File.read(Pathname(__FILE__).dirname.expand_path / 'fixtures' / fix)
+        end
       end
 
       def self.[]=(fix, val)
