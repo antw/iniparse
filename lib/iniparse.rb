@@ -19,6 +19,10 @@ module IniParse
   # section.
   class NoSectionError < ParseError; end
 
+  # Raised when a line is added to a collection which isn't allowed (e.g.
+  # adding a Section line into an OptionCollection).
+  class LineNotAllowed < IniParseError; end
+
   module_function
 
   # Parse given given INI document source +source+.

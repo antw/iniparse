@@ -38,7 +38,7 @@ module IniParse
     # collection, the old item will be replaced.
     #
     def <<(line)
-      line.blank? ? (@lines << line) : (self[line.key] = line)
+      line.blank? ? (@lines << line) : (self[line.key] = line) ; self
     end
 
     alias_method :push, :<<
@@ -68,6 +68,65 @@ module IniParse
     # Returns whether +key+ is in the collection.
     def has_key?(*args)
       @indicies.has_key?(*args)
+    end
+
+    # Returns this collection as an array. Includes blank and comment lines.
+    def to_a
+      @lines.dup
+    end
+
+    # Returns this collection as a hash. Does not contain blank and comment
+    # lines.
+    def to_hash
+      Hash[ map { |line| [line.key, line] } ]
+    end
+
+    alias_method :to_h, :to_hash
+  end
+
+  # A subclass of LineCollection used for storing (mainly) Option instances
+  # contained within a Section.
+  class OptionCollection < LineCollection
+    # Appends a line to the collection.
+    #
+    # If you push an Option with a key already represented in the collection,
+    # the previous Option will not be overwritten, but treated as a duplicate.
+    #
+    # ==== Parameters
+    # line<IniParse::LineType::Line>:: The line to be added to this section.
+    #
+    def <<(line)
+      if line.kind_of?(IniParse::Lines::Section)
+        raise IniParse::LineNotAllowed,
+          "You can't add a Section to an OptionCollection."
+      end
+
+      if line.blank? || (! has_key?(line.key))
+        super # Adding a comment or blank line.
+      else
+        self[line.key] = [self[line.key], line].flatten
+      end
+
+      self
+    end
+  end
+
+  # A subclass of LineCollection used for storing (mainly) Section instances
+  # which, when put together, constitute a Document.
+  class SectionCollection < LineCollection
+    def <<(line)
+      if line.kind_of?(IniParse::Lines::Option)
+        raise IniParse::LineNotAllowed,
+          "You can't add an Option to a SectionCollection."
+      end
+
+      if line.blank? || (! has_key?(line.key))
+        super # Adding a comment or blank line.
+      else
+        self[line.key].merge!(line)
+      end
+
+      self
     end
   end
 end
