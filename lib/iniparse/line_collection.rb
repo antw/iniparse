@@ -70,6 +70,12 @@ module IniParse
       @indicies.has_key?(*args)
     end
 
+    # Return an array containing the keys for the lines added to this
+    # collection.
+    def keys
+      map { |line| line.key }
+    end
+
     # Returns this collection as an array. Includes blank and comment lines.
     def to_a
       @lines.dup

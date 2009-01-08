@@ -138,6 +138,12 @@ describe "LineCollection", :shared => true do
       hash['third'].should  == @i3
     end
   end
+
+  describe '#keys' do
+    it 'should return an array of strings' do
+      @collection.keys.should == ['first', 'second', 'third']
+    end
+  end
 end
 
 # ----------------------------------------------------------------------------
