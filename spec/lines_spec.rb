@@ -160,8 +160,8 @@ end
 #
 
 describe 'IniParse::Lines::Section#initialize' do
-  it 'should typecast the given name to a string' do
-    IniParse::Lines::Section.new(:symbol).name.should == 'symbol'
+  it 'should typecast the given key to a string' do
+    IniParse::Lines::Section.new(:symbol).key.should == 'symbol'
   end
 end
 
@@ -173,19 +173,19 @@ describe 'IniParse::Lines::Section.parse' do
   it 'should match "[section]"' do
     line = parse('[section]')
     line.should be_kind_of(IniParse::Lines::Section)
-    line.name.should == 'section'
+    line.key.should == 'section'
   end
 
   it 'should match "[section with whitespace]"' do
     line = parse('[section with whitespace]')
     line.should be_kind_of(IniParse::Lines::Section)
-    line.name.should == 'section with whitespace'
+    line.key.should == 'section with whitespace'
   end
 
   it 'should match "[  section with surounding whitespace  ]"' do
     line = parse('[  section with surounding whitespace  ]')
     line.should be_kind_of(IniParse::Lines::Section)
-    line.name.should == '  section with surounding whitespace  '
+    line.key.should == '  section with surounding whitespace  '
   end
 
   it 'should not match "key = value"' do

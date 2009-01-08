@@ -123,14 +123,14 @@ module IniParse
                  \]$       # Closing bracket
                /x
 
-      attr_accessor :name
+      attr_accessor :key
 
       # ==== Parameters
-      # name<String>:: The section name.
-      # opts<Hash>::   Extra options for the line.
+      # key<String>:: The section name.
+      # opts<Hash>::  Extra options for the line.
       #
-      def initialize(name, opts = {})
-        @name, @opts = name.to_s, opts
+      def initialize(key, opts = {})
+        @key, @opts = key.to_s, opts
       end
 
       def self.parse(line, opts)

@@ -54,7 +54,7 @@ describe "IniParse::LineCollection" do
       @collection['second section'].should == s4
 
       # Make sure the old data is gone.
-      @collection.detect { |s| s.name == 'second section' }.should be_nil
+      @collection.detect { |s| s.key == 'second section' }.should be_nil
     end
 
     it 'should typecast given keys to a string' do

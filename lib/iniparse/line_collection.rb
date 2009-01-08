@@ -38,14 +38,7 @@ module IniParse
     # collection, the old item will be replaced.
     #
     def <<(line)
-      case line
-      when IniParse::Lines::Section
-        self[line.name] = line
-      when IniParse::Lines::Option
-        self[line.key] = line
-      else
-        @lines << line
-      end
+      line.blank? ? (@lines << line) : (self[line.key] = line)
     end
 
     alias_method :push, :<<
