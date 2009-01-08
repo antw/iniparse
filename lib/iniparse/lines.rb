@@ -67,9 +67,7 @@ module IniParse
       #             :indent => '  ' }]
       #
       def self.sanitize_line(line)
-        line, opts = strip_comment(line.dup, @default_opts)
-        line, opts = strip_indent(line, opts)
-        [line.rstrip, opts]
+        strip_indent(*strip_comment(line.dup, @default_opts))
       end
 
       #######
