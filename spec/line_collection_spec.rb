@@ -150,18 +150,6 @@ end
 # On with the collection specs...
 # ----------------------------------------------------------------------------
 
-describe 'IniParse::LineCollection' do
-  before(:each) do
-    @collection = IniParse::LineCollection.new
-    @i1  = IniParse::Lines::Section.new('first')
-    @i2  = IniParse::Lines::Section.new('second')
-    @i3  = IniParse::Lines::Section.new('third')
-    @new = IniParse::Lines::Section.new('fourth')
-  end
-
-  it_should_behave_like 'LineCollection'
-end
-
 describe 'IniParse::OptionCollection' do
   before(:each) do
     @collection = IniParse::OptionCollection.new

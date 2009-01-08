@@ -1,9 +1,15 @@
 module IniParse
-  # Like extlib's Dictionary, but storing the data in the array rather than
-  # the Hash, with the hash storing the array index of each key. This allows
-  # storage of items without a key (blanks and comments) while still allowing
-  # fast lookups of those which do have a key (sections and options).
-  class LineCollection
+  # Represents a collection of lines in an INI document.
+  #
+  # LineCollection acts a bit like an Array/Hash hybrid, allowing arbitrary
+  # lines to be added to the collection, but also indexes the keys of Section
+  # and Option lines to enable O(1) lookup via LineCollection#[].
+  #
+  # The lines instances are stored in an array, +@lines+, while the index of
+  # each Section/Option is held in a Hash, +@indicies+, keyed with the
+  # Section/Option#key value (see LineCollection#[]=).
+  #
+  module LineCollection
     include Enumerable
 
     def initialize
@@ -90,9 +96,42 @@ module IniParse
     alias_method :to_h, :to_hash
   end
 
-  # A subclass of LineCollection used for storing (mainly) Option instances
-  # contained within a Section.
-  class OptionCollection < LineCollection
+  # A implementation of LineCollection used for storing (mostly) Option
+  # instances contained within a Section.
+  #
+  # Since it is assumed that an INI document will only represent a section
+  # once, if SectionCollection encounters a Section key already held in the
+  # collection, the existing section is merged with the new one (see
+  # IniParse::Lines::Section#merge!).
+  class SectionCollection
+    include LineCollection
+
+    def <<(line)
+      if line.kind_of?(IniParse::Lines::Option)
+        raise IniParse::LineNotAllowed,
+          "You can't add an Option to a SectionCollection."
+      end
+
+      if line.blank? || (! has_key?(line.key))
+        super # Adding a new section, comment or blank line.
+      else
+        self[line.key].merge!(line)
+      end
+
+      self
+    end
+  end
+
+  # A implementation of LineCollection used for storing (mostly) Option
+  # instances contained within a Section.
+  #
+  # Whenever OptionCollection encounters an Option key already held in the
+  # collection, it treats it as a duplicate. This means that instead of
+  # overwriting the existing value, the value is changed to an array
+  # containing the previous _and_ the new Option instances.
+  class OptionCollection
+    include LineCollection
+
     # Appends a line to the collection.
     #
     # If you push an Option with a key already represented in the collection,
@@ -108,28 +147,9 @@ module IniParse
       end
 
       if line.blank? || (! has_key?(line.key))
-        super # Adding a comment or blank line.
+        super # Adding a new option, comment or blank line.
       else
         self[line.key] = [self[line.key], line].flatten
-      end
-
-      self
-    end
-  end
-
-  # A subclass of LineCollection used for storing (mainly) Section instances
-  # which, when put together, constitute a Document.
-  class SectionCollection < LineCollection
-    def <<(line)
-      if line.kind_of?(IniParse::Lines::Option)
-        raise IniParse::LineNotAllowed,
-          "You can't add an Option to a SectionCollection."
-      end
-
-      if line.blank? || (! has_key?(line.key))
-        super # Adding a comment or blank line.
-      else
-        self[line.key].merge!(line)
       end
 
       self
