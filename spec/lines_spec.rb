@@ -159,45 +159,183 @@ end
 # Section
 #
 
-describe 'IniParse::Lines::Section#initialize' do
-  it 'should typecast the given key to a string' do
-    IniParse::Lines::Section.new(:symbol).key.should == 'symbol'
-  end
-end
+describe 'IniParse::Lines::Section' do
+  before(:each) { @section = IniParse::Lines::Section.new('a section') }
 
-describe 'IniParse::Lines::Section.parse' do
-  def parse(line, opts = {})
-    IniParse::Lines::Section.parse(line, opts)
+  it 'should respond_to +lines+' do
+    @section.should respond_to(:lines)
   end
 
-  it 'should match "[section]"' do
-    line = parse('[section]')
-    line.should be_kind_of(IniParse::Lines::Section)
-    line.key.should == 'section'
+  it 'should not respond_to +lines=+' do
+    @section.should_not respond_to(:lines=)
   end
 
-  it 'should match "[section with whitespace]"' do
-    line = parse('[section with whitespace]')
-    line.should be_kind_of(IniParse::Lines::Section)
-    line.key.should == 'section with whitespace'
+  it 'should include Enumerable' do
+    IniParse::Lines::Section.included_modules.should include(Enumerable)
   end
 
-  it 'should match "[  section with surounding whitespace  ]"' do
-    line = parse('[  section with surounding whitespace  ]')
-    line.should be_kind_of(IniParse::Lines::Section)
-    line.key.should == '  section with surounding whitespace  '
+  describe '#initialize' do
+    it 'should typecast the given key to a string' do
+      IniParse::Lines::Section.new(:symbol).key.should == 'symbol'
+    end
   end
 
-  it 'should not match "key = value"' do
-    parse('key = value').should be_nil
+  describe '.parse' do
+    def parse(line, opts = {})
+      IniParse::Lines::Section.parse(line, opts)
+    end
+
+    it 'should match "[section]"' do
+      line = parse('[section]')
+      line.should be_kind_of(IniParse::Lines::Section)
+      line.key.should == 'section'
+    end
+
+    it 'should match "[section with whitespace]"' do
+      line = parse('[section with whitespace]')
+      line.should be_kind_of(IniParse::Lines::Section)
+      line.key.should == 'section with whitespace'
+    end
+
+    it 'should match "[  section with surounding whitespace  ]"' do
+      line = parse('[  section with surounding whitespace  ]')
+      line.should be_kind_of(IniParse::Lines::Section)
+      line.key.should == '  section with surounding whitespace  '
+    end
+
+    it 'should not match "key = value"' do
+      parse('key = value').should be_nil
+    end
+
+    it 'should not match ""' do
+      parse('').should be_nil
+    end
+
+    it 'should not match " "' do
+      parse(' ').should be_nil
+    end
   end
 
-  it 'should not match ""' do
-    parse('').should be_nil
+  describe '#option' do
+    it 'should retrieve the line identified by the given key' do
+      option = IniParse::Lines::Option.new('k', 'value one')
+      @section.lines << option
+      @section.option('k').should == option
+    end
+
+    it 'should return nil if the given key does not exist' do
+      @section.option('does_not_exist').should be_nil
+    end
   end
 
-  it 'should not match " "' do
-    parse(' ').should be_nil
+  describe '#each' do
+    it 'should call #each on +lines+' do
+      @section.lines.should_receive(:each)
+      @section.each { |l| }
+    end
+  end
+
+  describe '#[]' do
+    it 'should return nil if the given key does not exist' do
+      @section['k'].should be_nil
+    end
+
+    it 'should return a value if the given key exists' do
+      @section.lines << IniParse::Lines::Option.new('k', 'v')
+      @section['k'].should == 'v'
+    end
+
+    it 'should return an array of values if the key is a duplicate' do
+      @section.lines << IniParse::Lines::Option.new('k', 'v1')
+      @section.lines << IniParse::Lines::Option.new('k', 'v2')
+      @section.lines << IniParse::Lines::Option.new('k', 'v3')
+      @section['k'].should == ['v1', 'v2', 'v3']
+    end
+
+    it 'should typecast the key to a string' do
+      @section.lines << IniParse::Lines::Option.new('k', 'v')
+      @section[:k].should == 'v'
+    end
+  end
+
+  describe '#[]=' do
+    it 'should add a new Option with the given key and value' do
+      @section['k'] = 'a value'
+      @section.option('k').should be_kind_of(IniParse::Lines::Option)
+      @section['k'].should == 'a value'
+    end
+
+    it 'should update the Option if one already exists' do
+      @section.lines << IniParse::Lines::Option.new('k', 'orig value')
+      @section['k'] = 'new value'
+      @section['k'].should == 'new value'
+    end
+
+    it 'should replace the existing Option if it is an array' do
+      @section.lines << IniParse::Lines::Option.new('k', 'v1')
+      @section.lines << IniParse::Lines::Option.new('k', 'v2')
+      @section['k'] = 'new value'
+      @section.option('k').should be_kind_of(IniParse::Lines::Option)
+      @section['k'].should == 'new value'
+    end
+
+    it 'should typecast the key to a string' do
+      @section[:k] = 'a value'
+      @section['k'].should == 'a value'
+    end
+  end
+
+  describe '#merge!' do
+    before(:each) do
+      @section.lines << IniParse::Lines::Option.new('a', 'val1')
+      @section.lines << IniParse::Lines::Blank.new
+      @section.lines << IniParse::Lines::Comment.new
+      @section.lines << IniParse::Lines::Option.new('b', 'val2')
+
+      @new_section = IniParse::Lines::Section.new('new section')
+    end
+
+    it 'should merge options from the given Section into the receiver' do
+      @new_section.lines << IniParse::Lines::Option.new('c', 'val3')
+      @new_section.lines << IniParse::Lines::Option.new('d', 'val4')
+
+      @section.merge!(@new_section)
+      @section['a'].should == 'val1'
+      @section['b'].should == 'val2'
+      @section['c'].should == 'val3'
+      @section['d'].should == 'val4'
+    end
+
+    it 'should handle duplicates' do
+      @new_section.lines << IniParse::Lines::Option.new('a', 'val2')
+      @section.merge!(@new_section)
+      @section['a'].should == ['val1', 'val2']
+    end
+
+    it 'should handle duplicates on both sides' do
+      @section.lines << IniParse::Lines::Option.new('a', 'val2')
+      @new_section.lines << IniParse::Lines::Option.new('a', 'val3')
+      @new_section.lines << IniParse::Lines::Option.new('a', 'val4')
+
+      @section.merge!(@new_section)
+      @section['a'].should == ['val1', 'val2', 'val3', 'val4']
+    end
+
+    it 'should copy blank lines' do
+      @new_section.lines << IniParse::Lines::Blank.new
+      @section.merge!(@new_section)
+      line = nil
+      @section.each(true) { |l| line = l }
+      line.should be_kind_of(IniParse::Lines::Blank)
+    end
+
+    it 'should copy comments' do
+      @new_section.lines << IniParse::Lines::Comment.new
+      @section.merge!(@new_section)
+      line = nil
+      @section.each(true) { |l| line = l }
+      line.should be_kind_of(IniParse::Lines::Comment)
+    end
   end
 end
 

@@ -124,18 +124,99 @@ module IniParse
                /x
 
       attr_accessor :key
+      attr_reader   :lines
+
+      include Enumerable
 
       # ==== Parameters
       # key<String>:: The section name.
       # opts<Hash>::  Extra options for the line.
       #
       def initialize(key, opts = {})
-        @key, @opts = key.to_s, opts
+        @key   = key.to_s
+        @opts  = opts
+        @lines = IniParse::OptionCollection.new
       end
 
       def self.parse(line, opts)
         if m = @regex.match(line)
           new(m[1], opts)
+        end
+      end
+
+      # Enumerates through each Option in this section.
+      #
+      # Does not yield blank and comment lines by default; if you want _all_
+      # lines to be yielded, pass true.
+      #
+      # ==== Parameters
+      # include_blank<Boolean>:: Include blank/comment lines?
+      #
+      def each(*args, &blk)
+        @lines.each(*args, &blk)
+      end
+
+      # Adds a new option to this section, or updates an existing one.
+      #
+      # Note that +[]=+ has no knowledge of duplicate options and will happily
+      # overwrite duplicate options with your new value.
+      #
+      #   section['an_option']
+      #     # => ['duplicate one', 'duplicate two', ...]
+      #   section['an_option'] = 'new value'
+      #   section['an_option]
+      #     # => 'new value'
+      #
+      # If you do not wish to overwrite duplicates, but wish instead for your
+      # new option to be considered a duplicate, use +add_option+ instead.
+      #
+      def []=(key, value)
+        @lines[key.to_s] = IniParse::Lines::Option.new(key.to_s, value)
+      end
+
+      # Returns the value of an option identified by +key+.
+      #
+      # Returns nil if there is no corresponding option. If the key provided
+      # matches a set of duplicate options, an array will be returned containing
+      # the value of each option.
+      #
+      def [](key)
+        key = key.to_s
+
+        if @lines.has_key?(key)
+          if (match = @lines[key]).kind_of?(Array)
+            match.map { |line| line.value }
+          else
+            match.value
+          end
+        end
+      end
+
+      # Like [], except instead of returning just the option value, it returns
+      # the matching line instance.
+      #
+      # Will return an array of lines if the key matches a set of duplicates.
+      #
+      def option(key)
+        @lines[key.to_s]
+      end
+
+      # Merges section +other+ into this one. If the section being merged into
+      # this one contains options with the same key, they will be handled as
+      # duplicates.
+      #
+      # ==== Parameters
+      # other<IniParse::Section>:: The section to merge into this one.
+      #
+      def merge!(other)
+        other.lines.each(true) do |line|
+          if line.kind_of?(IniParse::Lines::Option)
+            @lines << line
+          elsif line.kind_of?(Array)
+            line.each { |duplicate| @lines << duplicate }
+          else
+            @lines << line # Blank or Comment, just chuck it straight in.
+          end
         end
       end
     end
