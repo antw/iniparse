@@ -453,7 +453,12 @@ describe 'IniParse::Lines::Option.parse' do
   end
 
   it 'should typecast integer values to Integer' do
-    parse('key = 1').value.should == 1
+    parse('key = 1').value.should  == 1
+    parse('key = 10').value.should == 10
+  end
+
+  it 'should not typecast integers with a leading 0 to Integer' do
+    parse('key = 0700').value.should == '0700'
   end
 
   it 'should typecast negative integer values to Integer' do
