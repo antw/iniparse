@@ -1,3 +1,7 @@
+* Convert duplicate options to use a DuplicateOptionsCollection which offers
+  easier #to_ini handling, as well as returning the last value when calling
+  #to_s (not to mention getting rid of all this #kind_of?(Array) stuff).
+
 * Support quoted values such that +key = "a value"+ becomes "a value" but is
   correctly written back to the file with quotes intact.
 
