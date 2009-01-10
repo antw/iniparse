@@ -1,10 +1,12 @@
 module IniParse
   # Represents an INI document.
   class Document
-    attr_reader :lines
+    attr_reader   :lines
+    attr_accessor :path
 
     # Creates a new Document instance.
-    def initialize
+    def initialize(path = nil)
+      @path  = path
       @lines = IniParse::SectionCollection.new
     end
 
@@ -31,6 +33,25 @@ module IniParse
     # Returns this document as a string suitable for saving to a file.
     def to_ini
       @lines.to_a.map { |line| line.to_ini }.join($/)
+    end
+
+    # Saves a copy of this Document to disk.
+    #
+    # If a path was supplied when the Document was initialized then nothing
+    # needs to be given to Document#save. If Document was not given a file
+    # path, or you wish to save the document elsewhere, supply a path when
+    # calling Document#save.
+    #
+    # ==== Parameters
+    # path<String>:: A path to which this document will be saved.
+    #
+    # ==== Raises
+    # IniParseError:: If your document couldn't be saved.
+    #
+    def save(path = nil)
+      @path = path if path
+      raise IniParseError, 'No path given to Document#save' if @path.blank?
+      File.open(@path, 'w') { |f| f.write(self.to_ini) }
     end
   end
 end

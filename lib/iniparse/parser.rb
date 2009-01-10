@@ -19,8 +19,8 @@ module IniParse
     # ==== Returns
     # IniParse::Document
     #
-    def parse
-      document        = IniParse::Document.new
+    def parse(document = nil)
+      document ||= IniParse::Document.new
       current_section = nil
 
       @source.split("\n", -1).each_with_index do |line, i|

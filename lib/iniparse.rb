@@ -39,4 +39,18 @@ module IniParse
   def parse(source)
     IniParse::Parser.new(source).parse
   end
+
+  # Opens the file at +path+, reads and parses it's contents.
+  #
+  # ==== Parameters
+  # path<String>:: The path to the INI document.
+  #
+  # ==== Returns
+  # IniParse::Document
+  #
+  def open(path)
+    IniParse::Parser.new(File.read(path)).parse(
+      IniParse::Document.new(path)
+    )
+  end
 end
