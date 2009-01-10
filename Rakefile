@@ -36,8 +36,8 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc = true
   s.extra_rdoc_files = %w(README.rdoc LICENSE)
 
-  # Uncomment this to add a dependency
-  # s.add_dependency "foo"
+  # Dependencies
+  s.add_dependency 'extlib', '>= 0.9.9'
 
   s.require_path = 'lib'
   s.files = %w(LICENSE README.rdoc Rakefile) + Dir.glob("{lib,spec}/**/*")
