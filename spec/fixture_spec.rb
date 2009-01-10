@@ -2,8 +2,12 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe "IniParse" do
   describe 'openttd.ini fixture' do
+    before(:all) do
+      @fixture = fixture('openttd.ini')
+    end
+
     it 'should parse without any errors' do
-      lambda { IniParse.parse(fixture('openttd.ini')) }.should_not raise_error
+      lambda { IniParse.parse(@fixture) }.should_not raise_error
     end
 
     it 'should have the correct sections' do
@@ -17,7 +21,7 @@ describe "IniParse" do
 
     it 'should have the correct options' do
       # Test the keys from one section.
-      doc     = IniParse.parse(fixture('openttd.ini'))
+      doc     = IniParse.parse(@fixture)
       section = doc['misc']
 
       section.lines.keys.should == [
@@ -45,11 +49,19 @@ describe "IniParse" do
       doc['preset-J']['gcf/1_other/BlackCC/mauvetoblackw.grf'].should be_nil
       doc['preset-J']['gcf/1_other/OpenGFX/OpenGFX_-_newFaces_v0.1.grf'].should be_nil
     end
+
+    it 'should be identical to the original when calling #to_ini' do
+      IniParse.parse(@fixture).to_ini.should == @fixture
+    end
   end
 
   describe 'race07.ini fixture' do
+    before(:all) do
+      @fixture = fixture('race07.ini')
+    end
+
     it 'should parse without any errors' do
-      lambda { IniParse.parse(fixture('race07.ini')) }.should_not raise_error
+      lambda { IniParse.parse(@fixture) }.should_not raise_error
     end
 
     it 'should have the correct sections' do
@@ -61,7 +73,7 @@ describe "IniParse" do
 
     it 'should have the correct options' do
       # Test the keys from one section.
-      doc     = IniParse.parse(fixture('race07.ini'))
+      doc     = IniParse.parse(@fixture)
       section = doc['Slot010']
 
       section.lines.keys.should == [
@@ -98,22 +110,32 @@ describe "IniParse" do
       doc['Race']['AIDB'].should == 'GameData\Locations\Anderstorp_2007\2007_ANDERSTORP.AIW'
       doc['Race']['Race Length'].should == 0.1
     end
+
+    it 'should be identical to the original when calling #to_ini' do
+      pending('awaiting presevation (or lack) of whitespace around =') do
+        IniParse.parse(@fixture).to_ini.should == @fixture
+      end
+    end
   end
 
   describe 'smb.ini fixture' do
+    before(:all) do
+      @fixture = fixture('smb.ini')
+    end
+
     it 'should parse without any errors' do
-      lambda { IniParse.parse(fixture('smb.ini')) }.should_not raise_error
+      lambda { IniParse.parse(@fixture) }.should_not raise_error
     end
 
     it 'should have the correct sections' do
-      IniParse.parse(fixture('smb.ini')).lines.keys.should == [
+      IniParse.parse(@fixture).lines.keys.should == [
         'global', 'printers'
       ]
     end
 
     it 'should have the correct options' do
       # Test the keys from one section.
-      doc     = IniParse.parse(fixture('smb.ini'))
+      doc     = IniParse.parse(@fixture)
       section = doc['global']
 
       section.lines.keys.should == [
@@ -135,6 +157,12 @@ describe "IniParse" do
       section['display charset'].should == 'UTF-8-MAC'
       section['vfs objects'].should == 'darwinacl,darwin_streams'
       section['usershare path'].should == '/var/samba/shares'
+    end
+
+    it 'should be identical to the original when calling #to_ini' do
+      pending('awaiting no octal/blank comment fix') do
+        IniParse.parse(@fixture).to_ini.should == @fixture
+      end
     end
   end
 end

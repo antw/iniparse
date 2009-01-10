@@ -17,6 +17,52 @@ describe "IniParse::Lines::Line" do
     end
   end
 
+  describe '#to_ini' do
+    it 'should return an empty string' do
+      Line.new.to_ini.should == ''
+    end
+
+    it 'should preserve line indents' do
+      Line.new(:indent => '    ').to_ini.should == '    '
+    end
+
+    describe 'when a comment is set' do
+      it 'should correctly include the comment' do
+        IniParse::Lines::Section.new(
+          'section', :comment => 'comment', :comment_sep => ';',
+          :comment_offset => 10
+        ).to_ini.should == '[section] ; comment'
+      end
+
+      it 'should correctly indent the comment' do
+        IniParse::Lines::Section.new(
+          'section', :comment => 'comment', :comment_sep => ';',
+          :comment_offset => 15
+        ).to_ini.should == '[section]      ; comment'
+      end
+
+      it 'should use the correct seperator' do
+        IniParse::Lines::Section.new(
+          'section', :comment => 'comment', :comment_sep => '#',
+          :comment_offset => 15
+        ).to_ini.should == '[section]      # comment'
+      end
+
+      it 'should use the ensure a space is added before the comment seperator' do
+        IniParse::Lines::Section.new(
+          'section', :comment => 'comment', :comment_sep => ';',
+          :comment_offset => 0
+        ).to_ini.should == '[section] ; comment'
+      end
+
+      it 'should not add an extra space if the line is blank' do
+        Line.new(
+          :comment => 'comment', :comment_sep => ';', :comment_offset => 0
+        ).to_ini.should == '; comment'
+      end
+    end
+  end
+
   describe '.parse' do
     it 'should raise NotImplementedError' do
       lambda { Line.parse('', {}) }.should raise_error(NotImplementedError)
@@ -337,158 +383,200 @@ describe 'IniParse::Lines::Section' do
       line.should be_kind_of(IniParse::Lines::Comment)
     end
   end
+
+  describe '#to_ini' do
+    it 'should include the section key' do
+      IniParse::Lines::Section.new('a section').to_ini.should == '[a section]'
+    end
+
+    it 'should include lines belonging to the section' do
+      @section.lines << IniParse::Lines::Option.new('a', 'val1')
+      @section.lines << IniParse::Lines::Blank.new
+      @section.lines << IniParse::Lines::Comment.new(
+        :comment => 'my comment', :comment_sep => ';', :comment_offset => 0
+      )
+      @section.lines << IniParse::Lines::Option.new('b', 'val2')
+
+      @section.to_ini.should == <<-INI.margin
+        [a section]
+        a = val1
+
+        ; my comment
+        b = val2
+      INI
+    end
+
+    it 'should include duplicate lines' do
+      @section.lines << IniParse::Lines::Option.new('a', 'val1')
+      @section.lines << IniParse::Lines::Option.new('a', 'val2')
+
+      @section.to_ini.should == <<-INI.margin
+        [a section]
+        a = val1
+        a = val2
+      INI
+    end
+  end
 end
 
 #
 # Option
 #
 
-describe 'Iniparse::Lines::Option#initialize' do
-  it 'should typecast the given key to a string' do
-    IniParse::Lines::Option.new(:symbol, '').key.should == 'symbol'
-  end
-end
-
-describe 'IniParse::Lines::Option.parse' do
-  def parse(line, opts = {})
-    IniParse::Lines::Option.parse(line, opts)
+describe 'Iniparse::Lines::Option' do
+  describe '#initialize' do
+    it 'should typecast the given key to a string' do
+      IniParse::Lines::Option.new(:symbol, '').key.should == 'symbol'
+    end
   end
 
-  it 'should not match "[section]"' do
-    parse('[section]').should be_nil
+  describe '#to_ini' do
+    it 'should include the key and value' do
+      IniParse::Lines::Option.new('key', 'value').to_ini.should == 'key = value'
+    end
   end
 
-  it 'should not match "[section with whitespace]"' do
-    parse('[section with whitespace]').should be_nil
-  end
+  describe '.parse' do
+    def parse(line, opts = {})
+      IniParse::Lines::Option.parse(line, opts)
+    end
 
-  it 'should match "key = value"' do
-    line = parse('key = value')
-    line.should be_kind_of(IniParse::Lines::Option)
-    line.key.should   == 'key'
-    line.value.should == 'value'
-  end
+    it 'should not match "[section]"' do
+      parse('[section]').should be_nil
+    end
 
-  it 'should match "key=value"' do
-    line = parse('key=value')
-    line.should be_kind_of(IniParse::Lines::Option)
-    line.key.should   == 'key'
-    line.value.should == 'value'
-  end
+    it 'should not match "[section with whitespace]"' do
+      parse('[section with whitespace]').should be_nil
+    end
 
-  it 'should match "key =value"' do
-    line = parse('key =value')
-    line.should be_kind_of(IniParse::Lines::Option)
-    line.key.should   == 'key'
-    line.value.should == 'value'
-  end
+    it 'should match "key = value"' do
+      line = parse('key = value')
+      line.should be_kind_of(IniParse::Lines::Option)
+      line.key.should   == 'key'
+      line.value.should == 'value'
+    end
 
-  it 'should match "key= value"' do
-    line = parse('key= value')
-    line.should be_kind_of(IniParse::Lines::Option)
-    line.key.should   == 'key'
-    line.value.should == 'value'
-  end
+    it 'should match "key=value"' do
+      line = parse('key=value')
+      line.should be_kind_of(IniParse::Lines::Option)
+      line.key.should   == 'key'
+      line.value.should == 'value'
+    end
 
-  it 'should match "key   =   value"' do
-    line = parse('key   =   value')
-    line.should be_kind_of(IniParse::Lines::Option)
-    line.key.should   == 'key'
-    line.value.should == 'value'
-  end
+    it 'should match "key =value"' do
+      line = parse('key =value')
+      line.should be_kind_of(IniParse::Lines::Option)
+      line.key.should   == 'key'
+      line.value.should == 'value'
+    end
 
-  it 'should match "key ="' do
-    parse('key =').should be_kind_of(IniParse::Lines::Option)
-  end
+    it 'should match "key= value"' do
+      line = parse('key= value')
+      line.should be_kind_of(IniParse::Lines::Option)
+      line.key.should   == 'key'
+      line.value.should == 'value'
+    end
 
-  it 'should match "key = "' do
-    parse('key =').should be_kind_of(IniParse::Lines::Option)
-  end
+    it 'should match "key   =   value"' do
+      line = parse('key   =   value')
+      line.should be_kind_of(IniParse::Lines::Option)
+      line.key.should   == 'key'
+      line.value.should == 'value'
+    end
 
-  it 'should correctly parse key "key.two"' do
-    line = parse('key.two = value')
-    line.should be_kind_of(IniParse::Lines::Option)
-    line.key.should   == 'key.two'
-    line.value.should == 'value'
-  end
+    it 'should match "key ="' do
+      parse('key =').should be_kind_of(IniParse::Lines::Option)
+    end
 
-  it 'should correctly parse key "key/with/slashes"' do
-    parse('key/with/slashes = value').key.should == 'key/with/slashes'
-  end
+    it 'should match "key = "' do
+      parse('key =').should be_kind_of(IniParse::Lines::Option)
+    end
 
-  it 'should correctly parse key "key_with_underscores"' do
-    parse('key_with_underscores = value').key.should == 'key_with_underscores'
-  end
+    it 'should correctly parse key "key.two"' do
+      line = parse('key.two = value')
+      line.should be_kind_of(IniParse::Lines::Option)
+      line.key.should   == 'key.two'
+      line.value.should == 'value'
+    end
 
-  it 'should correctly parse key "key_with_dashes"' do
-    parse('key_with_dashes = value').key.should == 'key_with_dashes'
-  end
+    it 'should correctly parse key "key/with/slashes"' do
+      parse('key/with/slashes = value').key.should == 'key/with/slashes'
+    end
 
-  it 'should correctly parse key "key with spaces"' do
-    parse('key with spaces = value').key.should == 'key with spaces'
-  end
+    it 'should correctly parse key "key_with_underscores"' do
+      parse('key_with_underscores = value').key.should == 'key_with_underscores'
+    end
 
-  it 'should not match ""' do
-    parse('').should be_nil
-  end
+    it 'should correctly parse key "key_with_dashes"' do
+      parse('key_with_dashes = value').key.should == 'key_with_dashes'
+    end
 
-  it 'should not match " "' do
-    parse(' ').should be_nil
-  end
+    it 'should correctly parse key "key with spaces"' do
+      parse('key with spaces = value').key.should == 'key with spaces'
+    end
 
-  it 'should typecast empty values to nil' do
-    parse('key =').value.should be_nil
-    parse('key = ').value.should be_nil
-    parse('key =    ').value.should be_nil
-  end
+    it 'should not match ""' do
+      parse('').should be_nil
+    end
 
-  it 'should typecast "true" to TrueClass' do
-    parse('key = true').value.should === true
-    parse('key = TRUE').value.should === true
-  end
+    it 'should not match " "' do
+      parse(' ').should be_nil
+    end
 
-  it 'should typecast "false" to FalseClass' do
-    parse('key = false').value.should === false
-    parse('key = FALSE').value.should === false
-  end
+    it 'should typecast empty values to nil' do
+      parse('key =').value.should be_nil
+      parse('key = ').value.should be_nil
+      parse('key =    ').value.should be_nil
+    end
 
-  it 'should typecast integer values to Integer' do
-    parse('key = 1').value.should  == 1
-    parse('key = 10').value.should == 10
-  end
+    it 'should typecast "true" to TrueClass' do
+      parse('key = true').value.should === true
+      parse('key = TRUE').value.should === true
+    end
 
-  it 'should not typecast integers with a leading 0 to Integer' do
-    parse('key = 0700').value.should == '0700'
-  end
+    it 'should typecast "false" to FalseClass' do
+      parse('key = false').value.should === false
+      parse('key = FALSE').value.should === false
+    end
 
-  it 'should typecast negative integer values to Integer' do
-    parse('key = -1').value.should == -1
-  end
+    it 'should typecast integer values to Integer' do
+      parse('key = 1').value.should  == 1
+      parse('key = 10').value.should == 10
+    end
 
-  it 'should typecast float values to Float' do
-    parse('key = 3.14159265').value.should == 3.14159265
-  end
+    it 'should not typecast integers with a leading 0 to Integer' do
+      parse('key = 0700').value.should == '0700'
+    end
 
-  it 'should typecast negative float values to Float' do
-    parse('key = -3.14159265').value.should == -3.14159265
-  end
+    it 'should typecast negative integer values to Integer' do
+      parse('key = -1').value.should == -1
+    end
 
-  it 'should typecast scientific notation numbers to Float' do
-    parse('key = 10e5').value.should == 10e5
-    parse('key = 10e+5').value.should == 10e5
-    parse('key = 10e-5').value.should == 10e-5
+    it 'should typecast float values to Float' do
+      parse('key = 3.14159265').value.should == 3.14159265
+    end
 
-    parse('key = -10e5').value.should == -10e5
-    parse('key = -10e+5').value.should == -10e5
-    parse('key = -10e-5').value.should == -10e-5
+    it 'should typecast negative float values to Float' do
+      parse('key = -3.14159265').value.should == -3.14159265
+    end
 
-    parse('key = -3.14159265e5').value.should == -3.14159265e5
-    parse('key = -3.14159265e+5').value.should == -3.14159265e5
-    parse('key = -3.14159265e-5').value.should == -3.14159265e-5
+    it 'should typecast scientific notation numbers to Float' do
+      parse('key = 10e5').value.should == 10e5
+      parse('key = 10e+5').value.should == 10e5
+      parse('key = 10e-5').value.should == 10e-5
 
-    parse('key = 3.14159265e5').value.should == 3.14159265e5
-    parse('key = 3.14159265e+5').value.should == 3.14159265e5
-    parse('key = 3.14159265e-5').value.should == 3.14159265e-5
+      parse('key = -10e5').value.should == -10e5
+      parse('key = -10e+5').value.should == -10e5
+      parse('key = -10e-5').value.should == -10e-5
+
+      parse('key = -3.14159265e5').value.should == -3.14159265e5
+      parse('key = -3.14159265e+5').value.should == -3.14159265e5
+      parse('key = -3.14159265e-5').value.should == -3.14159265e-5
+
+      parse('key = 3.14159265e5').value.should == 3.14159265e5
+      parse('key = 3.14159265e+5').value.should == 3.14159265e5
+      parse('key = 3.14159265e-5').value.should == 3.14159265e-5
+    end
   end
 end
 

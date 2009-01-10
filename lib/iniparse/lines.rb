@@ -17,7 +17,7 @@ module IniParse
       # ==== Parameters
       # opts<Hash>:: Extra options for the line.
       #
-      def initialize(opts = nil)
+      def initialize(opts = {})
         @opts = opts
       end
 
@@ -27,6 +27,21 @@ module IniParse
         unless @opts[:comment].blank?
           '%s %s' % [@opts[:comment_sep], @opts[:comment]]
         end
+      end
+
+      # Returns this line as a string as it would be represented in an INI
+      # document.
+      def to_ini
+        ini = line_contents
+        ini = @opts[:indent] + ini if @opts[:indent]
+
+        unless @opts[:comment].blank?
+          ini += ' ' unless ini.blank?
+          ini  = ini.ljust(opts[:comment_offset])
+          ini += comment
+        end
+
+        ini
       end
 
       # Parses a given line from an INI document.
@@ -105,6 +120,11 @@ module IniParse
 
         [line, opts]
       end
+
+      # Returns the contents for this line.
+      def line_contents
+        ''
+      end
     end
 
     # Represents a section header in an INI document. Section headers consist
@@ -139,6 +159,24 @@ module IniParse
       def self.parse(line, opts)
         if m = @regex.match(line)
           new(m[1], opts)
+        end
+      end
+
+      # Returns this line as a string as it would be represented in an INI
+      # document. Includes options, comments and blanks.
+      def to_ini
+        coll = lines.to_a
+
+        if coll.any?
+          super + $/ + coll.to_a.map do |line|
+            if line.kind_of?(Array)
+              line.map { |dup_line| dup_line.to_ini }.join($/)
+            else
+              line.to_ini
+            end
+          end.join($/)
+        else
+          super
         end
       end
 
@@ -215,6 +253,14 @@ module IniParse
           end
         end
       end
+
+      #######
+      private
+      #######
+
+      def line_contents
+        '[%s]' % key
+      end
     end
 
     # Represents probably the most common type of line in an INI document:
@@ -255,6 +301,14 @@ module IniParse
           when /false/i                                       then false
           else                                                     value
         end
+      end
+
+      #######
+      private
+      #######
+
+      def line_contents
+        '%s = %s' % [key, value]
       end
     end
 

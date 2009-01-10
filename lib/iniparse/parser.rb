@@ -23,7 +23,7 @@ module IniParse
       document        = IniParse::Document.new
       current_section = nil
 
-      @source.split("\n").each_with_index do |line, i|
+      @source.split("\n", -1).each_with_index do |line, i|
         sanitized, opts = IniParse::Lines::Line.sanitize_line(line)
 
         parsed = @@parse_types.reduce(nil) do |memo, type|
