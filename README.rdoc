@@ -71,4 +71,4 @@ be supplied to you.
 
 === Creating a new INI file
 
-Coming in 0.2. Sorry.
+See IniParse::Generator.

@@ -4,6 +4,7 @@ require 'extlib'
 dir = Pathname(__FILE__).dirname.expand_path / 'iniparse'
 
 require dir / 'document'
+require dir / 'generator'
 require dir / 'line_collection'
 require dir / 'lines'
 require dir / 'parser'
@@ -50,5 +51,16 @@ module IniParse
   #
   def open(path)
     IniParse::Parser.new(File.read(path)).parse(path)
+  end
+
+  # Creates a new IniParse::Document using the specification you provide.
+  #
+  # See IniParse::Generator.
+  #
+  # ==== Returns
+  # IniParse::Document
+  #
+  def gen(&blk)
+    IniParse::Generator.new.gen(&blk)
   end
 end
