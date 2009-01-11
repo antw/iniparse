@@ -90,8 +90,8 @@ module IniParse
     # ==== Returns
     # IniParse::Document
     #
-    def self.gen(opts = {}, &blk)
-      new(opts).gen(&blk)
+    def self.gen(&blk)
+      new.gen(&blk)
     end
 
     # Creates a new section with the given name and adds it to the document.
