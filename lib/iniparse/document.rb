@@ -35,6 +35,11 @@ module IniParse
       @lines.to_a.map { |line| line.to_ini }.join($/)
     end
 
+    # Returns true if a section with the given +key+ exists in this document.
+    def has_section?(key)
+      @lines.has_key?(key.to_s)
+    end
+
     # Saves a copy of this Document to disk.
     #
     # If a path was supplied when the Document was initialized then nothing

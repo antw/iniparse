@@ -21,6 +21,21 @@ describe "IniParse::Document" do
     doc.each { |l| }
   end
 
+  describe '#has_section?' do
+    before(:all) do
+      @doc = IniParse::Document.new
+      @doc.lines << IniParse::Lines::Section.new('first section')
+    end
+
+    it 'should return true if a section with the given key exists' do
+      @doc.should have_section('first section')
+    end
+
+    it 'should return true if no section with the given key exists' do
+      @doc.should_not have_section('second section')
+    end
+  end
+
   describe '#save' do
     describe 'when no path is given to save' do
       it 'should save the INI document if a path was given when initialized' do

@@ -473,6 +473,20 @@ describe 'IniParse::Lines::Section' do
       INI
     end
   end
+
+  describe '#has_option?' do
+    before do
+      @section['first'] = 'value'
+    end
+
+    it 'should return true if an option with the given key exists' do
+      @section.should have_option('first')
+    end
+
+    it 'should return true if no option with the given key exists' do
+      @section.should_not have_option('second')
+    end
+  end
 end
 
 #

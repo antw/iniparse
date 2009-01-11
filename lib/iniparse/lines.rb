@@ -243,6 +243,11 @@ module IniParse
         @lines[key.to_s]
       end
 
+      # Returns true if an option with the given +key+ exists in this section.
+      def has_option?(key)
+        @lines.has_key?(key.to_s)
+      end
+
       # Merges section +other+ into this one. If the section being merged into
       # this one contains options with the same key, they will be handled as
       # duplicates.
