@@ -20,20 +20,6 @@ describe "IniParse::Lines::Line" do
   before(:all) { @klass = IniParse::Lines::Line; @klass_args = [] }
   it_should_behave_like 'a Line'
 
-  describe '#comment' do
-    it 'should return nil if there is no comment' do
-      Line.new(:comment => nil).comment.should be_nil
-    end
-
-    it 'should return the comment if there is one' do
-      Line.new(:comment => 'comment', :comment_sep => ';').comment.should == '; comment'
-    end
-
-    it 'should allow a custom comment sepator' do
-      Line.new(:comment => 'comment', :comment_sep => '#').comment.should == '# comment'
-    end
-  end
-
   describe '#to_ini' do
     it 'should return an empty string' do
       Line.new.to_ini.should == ''
@@ -58,11 +44,16 @@ describe "IniParse::Lines::Line" do
         ).to_ini.should == '[section]      ; comment'
       end
 
+      it 'should use ";" as a default comment seperator' do
+        IniParse::Lines::Section.new(
+          'section', :comment => 'comment'
+        ).to_ini.should == '[section] ; comment'
+      end
+
       it 'should use the correct seperator' do
         IniParse::Lines::Section.new(
-          'section', :comment => 'comment', :comment_sep => '#',
-          :comment_offset => 15
-        ).to_ini.should == '[section]      # comment'
+          'section', :comment => 'comment', :comment_sep => '#'
+        ).to_ini.should == '[section] # comment'
       end
 
       it 'should use the ensure a space is added before the comment seperator' do
@@ -77,6 +68,31 @@ describe "IniParse::Lines::Line" do
           :comment => 'comment', :comment_sep => ';', :comment_offset => 0
         ).to_ini.should == '; comment'
       end
+    end
+
+    describe 'when no comment is set' do
+      it 'should not add trailing space if :comment_offset has a value' do
+        Line.new(:comment_offset => 10).to_ini.should == ''
+      end
+
+      it 'should not add a comment seperator :comment_sep has a value' do
+        Line.new(:comment_sep => ';').to_ini.should == ''
+      end
+    end
+  end
+
+  describe '#has_comment?' do
+    it 'should return true if :comment has a non-blank value' do
+      Line.new(:comment => 'comment').should have_comment
+    end
+
+    it 'should return true if :comment has a blank value' do
+      Line.new(:comment => '').should have_comment
+    end
+
+    it 'should return false if :comment has a nil value' do
+      Line.new.should_not have_comment
+      Line.new(:comment => nil).should_not have_comment
     end
   end
 
@@ -213,6 +229,26 @@ describe "IniParse::Lines::Line" do
 
       it 'should set opts[:comment_offset] to 1' do
         sanitize_line(@line)[1][:comment_offset].should == 1
+      end
+    end
+
+    describe 'with ";"' do
+      before(:all) { @line = ';' }
+
+      it 'should return a blank line' do
+        sanitize_line(@line)[0].should == ''
+      end
+
+      it 'should set opts[:comment] to "a comment"' do
+        sanitize_line(@line)[1][:comment].should == ''
+      end
+
+      it 'should set opts[:comment_sep] to ";"' do
+        sanitize_line(@line)[1][:comment_sep].should == ';'
+      end
+
+      it 'should set opts[:comment_offset] to 1' do
+        sanitize_line(@line)[1][:comment_offset].should == 0
       end
     end
   end
@@ -643,6 +679,10 @@ describe 'IniParse::Lines::Blank' do
     it 'should return Comment when matching " " with a comment' do
       parse(' ', :comment => 'c').should be_kind_of(IniParse::Lines::Comment)
     end
+
+    it 'should return Comment when matching "" with a blank (non_nil) comment' do
+      parse('', :comment => '').should be_kind_of(IniParse::Lines::Comment)
+    end
   end
 end
 
@@ -653,4 +693,37 @@ end
 describe 'IniParse::Lines::Comment' do
   before(:all) { @klass = IniParse::Lines::Comment; @klass_args = [] }
   it_should_behave_like 'a Line'
+
+  describe '#has_comment?' do
+    it 'should return true if :comment has a non-blank value' do
+      IniParse::Lines::Comment.new(:comment => 'comment').should have_comment
+    end
+
+    it 'should return true if :comment has a blank value' do
+      IniParse::Lines::Comment.new(:comment => '').should have_comment
+    end
+
+    it 'should return true if :comment has a nil value' do
+      IniParse::Lines::Comment.new.should have_comment
+      IniParse::Lines::Comment.new(:comment => nil).should have_comment
+    end
+  end
+
+  describe '#to_ini' do
+    it 'should return the comment' do
+      IniParse::Lines::Comment.new(
+        :comment => 'a comment'
+      ).to_ini.should == '; a comment'
+    end
+
+    it 'should preserve comment offset' do
+      IniParse::Lines::Comment.new(
+        :comment => 'a comment', :comment_offset => 10
+      ).to_ini.should == '          ; a comment'
+    end
+
+    it 'should return just the comment_sep if the comment is blank' do
+      IniParse::Lines::Comment.new.to_ini.should == ';'
+    end
+  end
 end

@@ -6,7 +6,7 @@ module IniParse
       class_inheritable_reader :default_opts
       @default_opts = {
         :comment        => nil,
-        :comment_sep    => nil,
+        :comment_sep    => ';',
         :comment_offset => 0,
         :indent         => nil
       }.freeze
@@ -25,12 +25,9 @@ module IniParse
         end
       end
 
-      # Returns the inline comment for this line. Includes the comment
-      # separator at the beginning of the string.
-      def comment
-        unless @opts[:comment].blank?
-          '%s %s' % [@opts[:comment_sep], @opts[:comment]]
-        end
+      # Returns if this line has an inline comment.
+      def has_comment?
+        not @opts[:comment].nil?
       end
 
       # Returns this line as a string as it would be represented in an INI
@@ -39,7 +36,7 @@ module IniParse
         ini = line_contents
         ini = @opts[:indent] + ini if @opts[:indent]
 
-        unless @opts[:comment].blank?
+        if has_comment?
           ini += ' ' unless ini.blank?
           ini  = ini.ljust(opts[:comment_offset])
           ini += comment
@@ -127,6 +124,12 @@ module IniParse
       # Returns the contents for this line.
       def line_contents
         ''
+      end
+
+      # Returns the inline comment for this line. Includes the comment
+      # separator at the beginning of the string.
+      def comment
+        '%s %s' % [@opts[:comment_sep], @opts[:comment]]
       end
     end
 
@@ -325,7 +328,7 @@ module IniParse
 
       def self.parse(line, opts)
         if line.blank?
-          if opts[:comment].blank?
+          if opts[:comment].nil?
             new
           else
             Comment.new(opts)
@@ -340,6 +343,26 @@ module IniParse
     #   # also a comment
     #
     class Comment < Blank
+      # Returns if this line has an inline comment.
+      #
+      # Being a Comment this will always return true, even if opts[:comment]
+      # is nil. This would be the case if the line starts with a comment
+      # seperator, but has no comment text. See spec/fixtures/smb.ini for a
+      # real-world example.
+      #
+      def has_comment?
+        true
+      end
+
+      # Returns the inline comment for this line. Includes the comment
+      # separator at the beginning of the string.
+      #
+      # In rare cases where a comment seperator appeared in the original file,
+      # but without a comment, just the seperator will be returned.
+      #
+      def comment
+        @opts[:comment].blank? ? @opts[:comment_sep] : super
+      end
     end
   end # Lines
 end # IniParse

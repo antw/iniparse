@@ -14,7 +14,6 @@ describe 'IniParse::Parser#parse' do
 
     it 'should have a comment as the first line' do
       @doc.lines.to_a.first.should be_kind_of(IniParse::Lines::Comment)
-      @doc.lines.to_a.first.comment.should == '; This is a comment'
     end
 
     it 'should have one section' do

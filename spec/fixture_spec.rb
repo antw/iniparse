@@ -160,9 +160,7 @@ describe "IniParse" do
     end
 
     it 'should be identical to the original when calling #to_ini' do
-      pending('awaiting no octal/blank comment fix') do
-        IniParse.parse(@fixture).to_ini.should == @fixture
-      end
+      IniParse.parse(@fixture).to_ini.should == @fixture
     end
   end
 end
