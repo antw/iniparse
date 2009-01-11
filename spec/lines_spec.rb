@@ -1,7 +1,24 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
+describe 'a Line', :shared => true do
+  describe 'when initialized' do
+    it 'should use the default options if an empty hash is given' do
+      @klass.new(*@klass_args).opts.should     == Line.default_opts
+      @klass.new(*@klass_args + [{}]).opts.should == Line.default_opts
+    end
+
+    it 'should apply custom options if any are given' do
+      @klass.new(*@klass_args + [{:comment_offset => 4}]).opts.should \
+        == Line.default_opts.merge(:comment_offset => 4)
+    end
+  end
+end
+
 describe "IniParse::Lines::Line" do
   Line = IniParse::Lines::Line
+
+  before(:all) { @klass = IniParse::Lines::Line; @klass_args = [] }
+  it_should_behave_like 'a Line'
 
   describe '#comment' do
     it 'should return nil if there is no comment' do
@@ -87,9 +104,9 @@ describe "IniParse::Lines::Line" do
     describe 'with "k = v"' do
       it 'should set no comment, offset or separator' do
         opts = sanitize_line('k = v')[1]
-        opts[:comment].should        == Line.default_opts[:comment]
-        opts[:comment_offset].should == Line.default_opts[:comment_offset]
-        opts[:comment_sep].should    == Line.default_opts[:comment_sep]
+        opts[:comment].should be_nil
+        opts[:comment_offset].should be_nil
+        opts[:comment_sep].should be_nil
       end
 
       it 'should leave the line intact' do
@@ -145,9 +162,9 @@ describe "IniParse::Lines::Line" do
 
       it 'should not set a comment' do
         opts = sanitize_line(@line)[1]
-        opts[:comment].should        == Line.default_opts[:comment]
-        opts[:comment_offset].should == Line.default_opts[:comment_offset]
-        opts[:comment_sep].should    == Line.default_opts[:comment_sep]
+        opts[:comment].should be_nil
+        opts[:comment_offset].should be_nil
+        opts[:comment_sep].should be_nil
       end
     end
 
@@ -207,6 +224,9 @@ end
 
 describe 'IniParse::Lines::Section' do
   before(:each) { @section = IniParse::Lines::Section.new('a section') }
+
+  before(:all) { @klass = IniParse::Lines::Section; @klass_args = ['s'] }
+  it_should_behave_like 'a Line'
 
   it 'should respond_to +lines+' do
     @section.should respond_to(:lines)
@@ -424,6 +444,9 @@ end
 #
 
 describe 'Iniparse::Lines::Option' do
+  before(:all) { @klass = IniParse::Lines::Option; @klass_args = ['k', 'v'] }
+  it_should_behave_like 'a Line'
+
   describe '#initialize' do
     it 'should typecast the given key to a string' do
       IniParse::Lines::Option.new(:symbol, '').key.should == 'symbol'
@@ -584,36 +607,50 @@ end
 # Blank
 #
 
-describe 'IniParse::Lines::Blank.parse' do
-  def parse(line, opts = {})
-    IniParse::Lines::Blank.parse(line, opts)
-  end
+describe 'IniParse::Lines::Blank' do
+  before(:all) { @klass = IniParse::Lines::Blank; @klass_args = [] }
+  it_should_behave_like 'a Line'
 
-  it 'should not match "[section]"' do
-    parse('[section]').should be_nil
-  end
+  describe '.parse' do
+    def parse(line, opts = {})
+      IniParse::Lines::Blank.parse(line, opts)
+    end
 
-  it 'should not match "[section with whitespace]"' do
-    parse('[section with whitespace]').should be_nil
-  end
+    it 'should not match "[section]"' do
+      parse('[section]').should be_nil
+    end
 
-  it 'should match "key = value"' do
-    parse('key = value').should be_nil
-  end
+    it 'should not match "[section with whitespace]"' do
+      parse('[section with whitespace]').should be_nil
+    end
 
-  it 'should return Blank when matching "" with no comment' do
-    parse('').should be_kind_of(IniParse::Lines::Blank)
-  end
+    it 'should match "key = value"' do
+      parse('key = value').should be_nil
+    end
 
-  it 'should return Blank when matching " " with no comment' do
-    parse(' ').should be_kind_of(IniParse::Lines::Blank)
-  end
+    it 'should return Blank when matching "" with no comment' do
+      parse('').should be_kind_of(IniParse::Lines::Blank)
+    end
 
-  it 'should return Comment when matching "" with a comment' do
-    parse('', :comment => 'c').should be_kind_of(IniParse::Lines::Comment)
-  end
+    it 'should return Blank when matching " " with no comment' do
+      parse(' ').should be_kind_of(IniParse::Lines::Blank)
+    end
 
-  it 'should return Comment when matching " " with a comment' do
-    parse(' ', :comment => 'c').should be_kind_of(IniParse::Lines::Comment)
+    it 'should return Comment when matching "" with a comment' do
+      parse('', :comment => 'c').should be_kind_of(IniParse::Lines::Comment)
+    end
+
+    it 'should return Comment when matching " " with a comment' do
+      parse(' ', :comment => 'c').should be_kind_of(IniParse::Lines::Comment)
+    end
   end
+end
+
+#
+# Comment
+#
+
+describe 'IniParse::Lines::Comment' do
+  before(:all) { @klass = IniParse::Lines::Comment; @klass_args = [] }
+  it_should_behave_like 'a Line'
 end

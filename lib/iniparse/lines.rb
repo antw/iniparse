@@ -18,7 +18,11 @@ module IniParse
       # opts<Hash>:: Extra options for the line.
       #
       def initialize(opts = {})
-        @opts = opts
+        @opts = if opts.empty?
+          self.default_opts
+        else
+          self.default_opts.merge(opts)
+        end
       end
 
       # Returns the inline comment for this line. Includes the comment
@@ -82,7 +86,7 @@ module IniParse
       #             :indent => '  ' }]
       #
       def self.sanitize_line(line)
-        strip_indent(*strip_comment(line.dup, @default_opts))
+        strip_indent(*strip_comment(line.dup, {}))
       end
 
       #######
@@ -94,13 +98,12 @@ module IniParse
       def self.strip_comment(line, opts)
         if m = /^(.*?)(?:\s+(;|\#)\s*(.*))$/.match(line) ||
            m = /(^)(?:(;|\#)\s*(.*))$/.match(line) # Comment lines.
-          opts = opts.merge(
-            :comment        => m[3].rstrip,
-            :comment_sep    => m[2],
-            # Remove the line content (since an option value may contain a
-            # semi-colon) _then_ get the index of the comment separator.
-            :comment_offset => line[(m[1].length..-1)].index(m[2]) + m[1].length
-          )
+          opts[:comment] = m[3].rstrip
+          opts[:comment_sep] = m[2]
+          # Remove the line content (since an option value may contain a
+          # semi-colon) _then_ get the index of the comment separator.
+          opts[:comment_offset] =
+            line[(m[1].length..-1)].index(m[2]) + m[1].length
 
           line = m[1]
         else
@@ -115,7 +118,7 @@ module IniParse
       def self.strip_indent(line, opts)
         if m = /^(\s+).*$/.match(line)
           line.lstrip!
-          opts = opts.merge(:indent => m[1])
+          opts[:indent] = m[1]
         end
 
         [line, opts]
@@ -151,8 +154,8 @@ module IniParse
       # opts<Hash>::  Extra options for the line.
       #
       def initialize(key, opts = {})
+        super(opts)
         @key   = key.to_s
-        @opts  = opts
         @lines = IniParse::OptionCollection.new
       end
 
@@ -282,7 +285,8 @@ module IniParse
       # opts<Hash>::    Extra options for the line.
       #
       def initialize(key, value, opts = {})
-        @key, @value, @opts = key.to_s, value, opts
+        super(opts)
+        @key, @value = key.to_s, value
       end
 
       def self.parse(line, opts)
