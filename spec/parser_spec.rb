@@ -10,7 +10,7 @@ describe 'IniParse::Parser#parse' do
   end
 
   it "should set the Document's path to the one given" do
-    parse('', '/my/file.ini').path.should == '/my/file.ini'
+    IniParse::Parser.new('').parse('/my/file.ini').path.should == '/my/file.ini'
   end
 
   describe 'with :comment_before_section fixture' do
