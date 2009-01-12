@@ -20,8 +20,7 @@ module IniParse
     # IniParse::Document
     #
     def parse
-      document = IniParse::Document.new
-      current_section = nil
+      generator = IniParse::Generator.new
 
       @source.split("\n", -1).each_with_index do |line, i|
         sanitized, opts = IniParse::Lines::Line.sanitize_line(line)
@@ -30,21 +29,8 @@ module IniParse
           memo ||= type.parse(sanitized, opts)
         end
 
-        case parsed
-        when IniParse::Lines::Section
-          current_section = parsed
-          document.lines << parsed
-        when IniParse::Lines::Option
-          if current_section.nil?
-            # INI documents can't have options without a parent section.
-            raise NoSectionError, <<-EOS.compress_lines
-              Your INI document contains an option before the first section is
-              declared: '#{line}' (line #{i+1}).
-            EOS
-          end
-          current_section.lines << parsed
-        when IniParse::Lines::Blank, IniParse::Lines::Comment
-          ((current_section && current_section.lines) || document.lines) << parsed
+        if parsed
+          generator.send(*parsed)
         else
           raise IniParse::ParseError, <<-EOS.compress_lines
             A line of your INI document could not be parsed to a LineType:
@@ -53,7 +39,7 @@ module IniParse
         end
       end
 
-      document
+      generator.document
     end
   end
 end

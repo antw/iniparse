@@ -288,33 +288,29 @@ describe 'IniParse::Lines::Section' do
     end
 
     it 'should match "[section]"' do
-      line = parse('[section]')
-      line.should be_kind_of(IniParse::Lines::Section)
-      line.key.should == 'section'
+      parse('[section]').should be_section_tuple('section')
     end
 
     it 'should match "[section with whitespace]"' do
-      line = parse('[section with whitespace]')
-      line.should be_kind_of(IniParse::Lines::Section)
-      line.key.should == 'section with whitespace'
+      parse('[section with whitespace]').should \
+        be_section_tuple('section with whitespace')
     end
 
     it 'should match "[  section with surounding whitespace  ]"' do
-      line = parse('[  section with surounding whitespace  ]')
-      line.should be_kind_of(IniParse::Lines::Section)
-      line.key.should == '  section with surounding whitespace  '
+      parse('[  section with surounding whitespace  ]').should \
+        be_section_tuple('  section with surounding whitespace  ')
     end
 
     it 'should not match "key = value"' do
-      parse('key = value').should be_nil
+      parse('key = value').should_not be_section_tuple
     end
 
     it 'should not match ""' do
-      parse('').should be_nil
+      parse('').should_not be_section_tuple
     end
 
     it 'should not match " "' do
-      parse(' ').should be_nil
+      parse(' ').should_not be_section_tuple
     end
   end
 
@@ -515,140 +511,126 @@ describe 'Iniparse::Lines::Option' do
     end
 
     it 'should not match "[section]"' do
-      parse('[section]').should be_nil
+      parse('[section]').should_not be_option_tuple
     end
 
     it 'should not match "[section with whitespace]"' do
-      parse('[section with whitespace]').should be_nil
+      parse('[section with whitespace]').should_not be_option_tuple
     end
 
     it 'should match "key = value"' do
-      line = parse('key = value')
-      line.should be_kind_of(IniParse::Lines::Option)
-      line.key.should   == 'key'
-      line.value.should == 'value'
+      parse('key = value').should be_option_tuple('key', 'value')
     end
 
     it 'should match "key=value"' do
-      line = parse('key=value')
-      line.should be_kind_of(IniParse::Lines::Option)
-      line.key.should   == 'key'
-      line.value.should == 'value'
+      parse('key=value').should be_option_tuple('key', 'value')
     end
 
     it 'should match "key =value"' do
-      line = parse('key =value')
-      line.should be_kind_of(IniParse::Lines::Option)
-      line.key.should   == 'key'
-      line.value.should == 'value'
+      parse('key =value').should be_option_tuple('key', 'value')
     end
 
     it 'should match "key= value"' do
-      line = parse('key= value')
-      line.should be_kind_of(IniParse::Lines::Option)
-      line.key.should   == 'key'
-      line.value.should == 'value'
+      parse('key= value').should be_option_tuple('key', 'value')
     end
 
     it 'should match "key   =   value"' do
-      line = parse('key   =   value')
-      line.should be_kind_of(IniParse::Lines::Option)
-      line.key.should   == 'key'
-      line.value.should == 'value'
+      parse('key   =   value').should be_option_tuple('key', 'value')
     end
 
     it 'should match "key ="' do
-      parse('key =').should be_kind_of(IniParse::Lines::Option)
+      parse('key =').should be_option_tuple('key', nil)
     end
 
     it 'should match "key = "' do
-      parse('key =').should be_kind_of(IniParse::Lines::Option)
+      parse('key =').should be_option_tuple('key', nil)
     end
 
     it 'should correctly parse key "key.two"' do
-      line = parse('key.two = value')
-      line.should be_kind_of(IniParse::Lines::Option)
-      line.key.should   == 'key.two'
-      line.value.should == 'value'
+      parse('key.two = value').should be_option_tuple('key.two', 'value')
     end
 
     it 'should correctly parse key "key/with/slashes"' do
-      parse('key/with/slashes = value').key.should == 'key/with/slashes'
+      parse('key/with/slashes = value').should \
+        be_option_tuple('key/with/slashes', 'value')
     end
 
     it 'should correctly parse key "key_with_underscores"' do
-      parse('key_with_underscores = value').key.should == 'key_with_underscores'
+      parse('key_with_underscores = value').should \
+        be_option_tuple('key_with_underscores', 'value')
     end
 
     it 'should correctly parse key "key_with_dashes"' do
-      parse('key_with_dashes = value').key.should == 'key_with_dashes'
+      parse('key_with_dashes = value').should \
+        be_option_tuple('key_with_dashes', 'value')
     end
 
     it 'should correctly parse key "key with spaces"' do
-      parse('key with spaces = value').key.should == 'key with spaces'
+      parse('key with spaces = value').should \
+        be_option_tuple('key with spaces', 'value')
     end
 
     it 'should not match ""' do
-      parse('').should be_nil
+      parse('').should_not be_option_tuple
     end
 
     it 'should not match " "' do
-      parse(' ').should be_nil
+      parse(' ').should_not be_option_tuple
     end
 
     it 'should typecast empty values to nil' do
-      parse('key =').value.should be_nil
-      parse('key = ').value.should be_nil
-      parse('key =    ').value.should be_nil
+      parse('key =').should be_option_tuple('key', nil)
+      parse('key = ').should be_option_tuple('key', nil)
+      parse('key =    ').should be_option_tuple('key', nil)
     end
 
     it 'should typecast "true" to TrueClass' do
-      parse('key = true').value.should === true
-      parse('key = TRUE').value.should === true
+      parse('key = true').should be_option_tuple('key', true)
+      parse('key = TRUE').should be_option_tuple('key', true)
     end
 
     it 'should typecast "false" to FalseClass' do
-      parse('key = false').value.should === false
-      parse('key = FALSE').value.should === false
+      parse('key = false').should be_option_tuple('key', false)
+      parse('key = FALSE').should be_option_tuple('key', false)
     end
 
     it 'should typecast integer values to Integer' do
-      parse('key = 1').value.should  == 1
-      parse('key = 10').value.should == 10
+      parse('key = 1').should be_option_tuple('key', 1)
+      parse('key = 10').should be_option_tuple('key', 10)
     end
 
     it 'should not typecast integers with a leading 0 to Integer' do
-      parse('key = 0700').value.should == '0700'
+      parse('key = 0700').should be_option_tuple('key', '0700')
     end
 
     it 'should typecast negative integer values to Integer' do
-      parse('key = -1').value.should == -1
+      parse('key = -1').should be_option_tuple('key', -1)
     end
 
     it 'should typecast float values to Float' do
-      parse('key = 3.14159265').value.should == 3.14159265
+      parse('key = 3.14159265').should be_option_tuple('key', 3.14159265)
     end
 
     it 'should typecast negative float values to Float' do
-      parse('key = -3.14159265').value.should == -3.14159265
+      parse('key = -3.14159265').should be_option_tuple('key', -3.14159265)
     end
 
     it 'should typecast scientific notation numbers to Float' do
-      parse('key = 10e5').value.should == 10e5
-      parse('key = 10e+5').value.should == 10e5
-      parse('key = 10e-5').value.should == 10e-5
+      parse('key = 10e5').should be_option_tuple('key', 10e5)
+      parse('key = 10e+5').should be_option_tuple('key', 10e5)
+      parse('key = 10e-5').should be_option_tuple('key', 10e-5)
 
-      parse('key = -10e5').value.should == -10e5
-      parse('key = -10e+5').value.should == -10e5
-      parse('key = -10e-5').value.should == -10e-5
+      parse('key = -10e5').should be_option_tuple('key', -10e5)
+      parse('key = -10e+5').should be_option_tuple('key', -10e5)
+      parse('key = -10e-5').should be_option_tuple('key', -10e-5)
 
-      parse('key = -3.14159265e5').value.should == -3.14159265e5
-      parse('key = -3.14159265e+5').value.should == -3.14159265e5
-      parse('key = -3.14159265e-5').value.should == -3.14159265e-5
+      parse('key = 3.14159265e5').should be_option_tuple('key', 3.14159265e5)
+      parse('key = 3.14159265e+5').should be_option_tuple('key', 3.14159265e5)
+      parse('key = 3.14159265e-5').should be_option_tuple('key', 3.14159265e-5)
 
-      parse('key = 3.14159265e5').value.should == 3.14159265e5
-      parse('key = 3.14159265e+5').value.should == 3.14159265e5
-      parse('key = 3.14159265e-5').value.should == 3.14159265e-5
+      parse('key = -3.14159265e5').should be_option_tuple('key', -3.14159265e5)
+      parse('key = -3.14159265e+5').should be_option_tuple('key', -3.14159265e5)
+      parse('key = -3.14159265e-5').should be_option_tuple('key', -3.14159265e-5)
     end
   end
 end
@@ -667,35 +649,35 @@ describe 'IniParse::Lines::Blank' do
     end
 
     it 'should not match "[section]"' do
-      parse('[section]').should be_nil
+      parse('[section]').should_not be_blank_tuple
     end
 
     it 'should not match "[section with whitespace]"' do
-      parse('[section with whitespace]').should be_nil
+      parse('[section with whitespace]').should_not be_blank_tuple
     end
 
     it 'should match "key = value"' do
-      parse('key = value').should be_nil
+      parse('key = value').should_not be_blank_tuple
     end
 
     it 'should return Blank when matching "" with no comment' do
-      parse('').should be_kind_of(IniParse::Lines::Blank)
+      parse('').should be_blank_tuple
     end
 
     it 'should return Blank when matching " " with no comment' do
-      parse(' ').should be_kind_of(IniParse::Lines::Blank)
+      parse(' ').should be_blank_tuple
     end
 
     it 'should return Comment when matching "" with a comment' do
-      parse('', :comment => 'c').should be_kind_of(IniParse::Lines::Comment)
+      parse('', :comment => 'c').should be_comment_tuple
     end
 
     it 'should return Comment when matching " " with a comment' do
-      parse(' ', :comment => 'c').should be_kind_of(IniParse::Lines::Comment)
+      parse(' ', :comment => 'c').should be_comment_tuple
     end
 
     it 'should return Comment when matching "" with a blank (non_nil) comment' do
-      parse('', :comment => '').should be_kind_of(IniParse::Lines::Comment)
+      parse('', :comment => '').should be_comment_tuple
     end
   end
 end

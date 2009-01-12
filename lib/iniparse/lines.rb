@@ -164,7 +164,7 @@ module IniParse
 
       def self.parse(line, opts)
         if m = @regex.match(line)
-          new(m[1], opts)
+          [:section, m[1], opts]
         end
       end
 
@@ -299,7 +299,7 @@ module IniParse
 
       def self.parse(line, opts)
         if m = @regex.match(line)
-          new(m[1].strip, typecast(m[2].strip), opts)
+          [:option, m[1].strip, typecast(m[2].strip), opts]
         end
       end
 
@@ -334,9 +334,9 @@ module IniParse
       def self.parse(line, opts)
         if line.blank?
           if opts[:comment].nil?
-            new
+            [:blank]
           else
-            Comment.new(opts)
+            [:comment, opts[:comment], opts]
           end
         end
       end
