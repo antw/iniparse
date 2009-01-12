@@ -9,10 +9,6 @@ describe 'IniParse::Parser#parse' do
     parse('').should be_kind_of(IniParse::Document)
   end
 
-  it "should set the Document's path to the one given" do
-    IniParse::Parser.new('').parse('/my/file.ini').path.should == '/my/file.ini'
-  end
-
   describe 'with :comment_before_section fixture' do
     before(:all) { @doc = parse(fixture(:comment_before_section)) }
 

@@ -50,7 +50,9 @@ module IniParse
   # IniParse::Document
   #
   def open(path)
-    IniParse::Parser.new(File.read(path)).parse(path)
+    document = IniParse::Parser.new(File.read(path)).parse
+    document.path = path
+    document
   end
 
   # Creates a new IniParse::Document using the specification you provide.
