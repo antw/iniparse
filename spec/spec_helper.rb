@@ -31,7 +31,7 @@ module IniParse
         end
       end
 
-      # Used as a base for creating tuple matchers.
+      # Used to match line tuples returned by Parser.parse_line.
       class BeLineTuple
         def initialize(type, value_keys = [], *expected)
           @expected_type = type
@@ -87,13 +87,6 @@ module IniParse
         end
 
         def correct_values?
-          # Ensure the received tuple has the correct number of values.
-          if values.length != @value_keys.length
-            throw :fail, "with %d values but had %d values" % [
-              @value_keys.length, values.length
-            ]
-          end
-
           # Make sure the values match.
           @value_keys.each_with_index do |key, i|
             if @expected_values[i] != :any && values[i] != @expected_values[i]
