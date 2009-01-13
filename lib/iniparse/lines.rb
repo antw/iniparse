@@ -1,48 +1,31 @@
 module IniParse
   module Lines
-    def default_opts
-      @default_opts ||= {
-        :comment        => nil,
-        :comment_sep    => ';',
-        :comment_offset => 0,
-        :indent         => nil
-      }.freeze
-    end
-
-    module_function :default_opts
-
     # A base class from which other line types should inherit.
     module Line
-      def self.included(base)
-        # Create an options accessor.
-        base.send(:attr_accessor, :opts)
-      end
-
       # ==== Parameters
       # opts<Hash>:: Extra options for the line.
       #
       def initialize(opts = {})
-        @opts = if opts.empty?
-          IniParse::Lines.default_opts
-        else
-          IniParse::Lines.default_opts.merge(opts)
-        end
+        @comment        = opts.fetch(:comment, nil)
+        @comment_sep    = opts.fetch(:comment_sep, ';')
+        @comment_offset = opts.fetch(:comment_offset, 0)
+        @indent         = opts.fetch(:indent, '')
       end
 
       # Returns if this line has an inline comment.
       def has_comment?
-        not @opts[:comment].nil?
+        not @comment.nil?
       end
 
       # Returns this line as a string as it would be represented in an INI
       # document.
       def to_ini
         ini = line_contents
-        ini = @opts[:indent] + ini if @opts[:indent]
+        ini = @indent + ini if @indent
 
         if has_comment?
           ini += ' ' unless ini.blank?
-          ini  = ini.ljust(opts[:comment_offset])
+          ini  = ini.ljust(@comment_offset)
           ini += comment
         end
 
@@ -57,7 +40,7 @@ module IniParse
       # Returns the inline comment for this line. Includes the comment
       # separator at the beginning of the string.
       def comment
-        '%s %s' % [@opts[:comment_sep], @opts[:comment]]
+        '%s %s' % [@comment_sep, @comment]
       end
     end
 
@@ -284,7 +267,7 @@ module IniParse
     class Comment < Blank
       # Returns if this line has an inline comment.
       #
-      # Being a Comment this will always return true, even if opts[:comment]
+      # Being a Comment this will always return true, even if the comment
       # is nil. This would be the case if the line starts with a comment
       # seperator, but has no comment text. See spec/fixtures/smb.ini for a
       # real-world example.
@@ -300,7 +283,7 @@ module IniParse
       # but without a comment, just the seperator will be returned.
       #
       def comment
-        @opts[:comment].blank? ? @opts[:comment_sep] : super
+        @comment.blank? ? @comment_sep : super
       end
     end
   end # Lines

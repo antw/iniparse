@@ -39,7 +39,7 @@ describe 'When generating a document using Generator without section blocks,' do
 
     it 'should pass extra options to the Section instance' do
       @gen.section("a section", :indent => '    ')
-      @gen.document["a section"].opts[:indent].should == '    '
+      @gen.document["a section"].to_ini.should match(/\A    /)
     end
   end
 
@@ -53,7 +53,7 @@ describe 'When generating a document using Generator without section blocks,' do
     it 'should pass extra options to the Option instance' do
       @gen.section("a section")
       @gen.option("my option", "a value", :indent => '    ')
-      @gen.document["a section"].option("my option").opts[:indent].should == '    '
+      @gen.document["a section"].option("my option").to_ini.should match(/^    /)
     end
 
     describe 'when the context is a Document' do
@@ -70,20 +70,6 @@ describe 'When generating a document using Generator without section blocks,' do
         @gen.document["a section"].should have_option("my option")
         @gen.document["a section"]["my option"].should == "a value"
       end
-
-      it "should use the parent section's options as a base" do
-        @gen.section("a section", :indent => '    ')
-        @gen.option("my option", "a value", :comment_sep => '#')
-        opts = @gen.document["a section"].option("my option").opts
-        opts[:indent].should      == '    '
-        opts[:comment_sep].should == '#'
-      end
-
-      it "should not use the parent section's comment when setting line options" do
-        @gen.section("a section", :comment => 'My section')
-        @gen.option("my option", "a value")
-        @gen.document["a section"].option("my option").opts[:comment].should be_nil
-      end
     end
   end
 
@@ -96,12 +82,14 @@ describe 'When generating a document using Generator without section blocks,' do
   describe 'adding a comment' do
     it 'should pass extra options to the Option instance' do
       @gen.comment("My comment", :indent => '    ')
-      @gen.document.lines.to_a.first.opts[:indent].should == '    '
+      @gen.document.lines.to_a.first.to_ini.should match(/^    /)
     end
 
     it 'should ignore any extra :comment option' do
       @gen.comment("My comment", :comment => 'Ignored')
-      @gen.document.lines.to_a.first.opts[:comment].should == 'My comment'
+      comment_ini = @gen.document.lines.to_a.first.to_ini
+      comment_ini.should match(/My comment/)
+      comment_ini.should_not match(/Ignored/)
     end
 
     describe 'when the context is a Document' do
@@ -109,19 +97,7 @@ describe 'When generating a document using Generator without section blocks,' do
         @gen.comment('My comment')
         comment = @gen.document.lines.to_a.first
         comment.should be_kind_of(IniParse::Lines::Comment)
-        comment.opts[:comment].should == 'My comment'
-      end
-
-      it 'should use the default line options as a base' do
-        @gen.comment('My comment')
-        opts = @gen.document.lines.to_a.first.opts
-
-        opts[:indent].should \
-          == IniParse::Lines.default_opts[:indent]
-        opts[:comment_sep].should \
-          == IniParse::Lines.default_opts[:comment_sep]
-        opts[:comment_indent].should \
-          == IniParse::Lines.default_opts[:comment_indent]
+        comment.to_ini.should match(/; My comment/)
       end
     end
 
@@ -131,21 +107,7 @@ describe 'When generating a document using Generator without section blocks,' do
         @gen.comment('My comment')
         comment = @gen.document['a section'].lines.to_a.first
         comment.should be_kind_of(IniParse::Lines::Comment)
-        comment.opts[:comment].should == 'My comment'
-      end
-
-      it "should use the parent section's line options as a base" do
-        @gen.section("a section", :comment_offset => 5)
-        @gen.comment('My comment', :comment_sep => '#')
-        opts = @gen.document['a section'].lines.to_a.first.opts
-        opts[:comment_offset].should == 5
-        opts[:comment_sep].should == '#'
-      end
-
-      it "should not use the parent section's comment when setting line options" do
-        @gen.section("a section", :comment => 'My section')
-        @gen.comment('My comment')
-        @gen.document['a section'].lines.to_a.first.opts[:comment].should == 'My comment'
+        comment.to_ini.should match(/My comment/)
       end
     end
   end

@@ -10,24 +10,6 @@ module IniParse::Test
   end
 end
 
-describe 'a Line', :shared => true do
-  it 'should have an +opts+ accessor' do
-    @klass.instance_methods.should include('opts')
-  end
-
-  describe 'when initialized' do
-    it 'should use the default options if an empty hash is given' do
-      @klass.new(*@klass_args).opts.should == IniParse::Lines.default_opts
-      @klass.new(*@klass_args + [{}]).opts.should == IniParse::Lines.default_opts
-    end
-
-    it 'should apply custom options if any are given' do
-      @klass.new(*@klass_args + [{:comment_offset => 4}]).opts.should \
-        == IniParse::Lines.default_opts.merge(:comment_offset => 4)
-    end
-  end
-end
-
 describe "IniParse::Lines::Line module" do
   describe '#to_ini' do
     it 'should return +line_contents+' do
@@ -114,9 +96,6 @@ end
 
 describe 'IniParse::Lines::Section' do
   before(:each) { @section = IniParse::Lines::Section.new('a section') }
-
-  before(:all) { @klass = IniParse::Lines::Section; @klass_args = ['s'] }
-  it_should_behave_like 'a Line'
 
   it 'should respond_to +lines+' do
     @section.should respond_to(:lines)
@@ -312,9 +291,6 @@ end
 #
 
 describe 'Iniparse::Lines::Option' do
-  before(:all) { @klass = IniParse::Lines::Option; @klass_args = ['k', 'v'] }
-  it_should_behave_like 'a Line'
-
   describe '#initialize' do
     it 'should typecast the given key to a string' do
       IniParse::Lines::Option.new(:symbol, '').key.should == 'symbol'
@@ -393,19 +369,11 @@ end
 # Blank
 #
 
-describe 'IniParse::Lines::Blank' do
-  before(:all) { @klass = IniParse::Lines::Blank; @klass_args = [] }
-  it_should_behave_like 'a Line'
-end
-
 #
 # Comment
 #
 
 describe 'IniParse::Lines::Comment' do
-  before(:all) { @klass = IniParse::Lines::Comment; @klass_args = [] }
-  it_should_behave_like 'a Line'
-
   describe '#has_comment?' do
     it 'should return true if :comment has a non-blank value' do
       IniParse::Lines::Comment.new(:comment => 'comment').should have_comment

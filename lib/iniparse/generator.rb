@@ -71,13 +71,17 @@ module IniParse
   #       max_trains = 500 ; More = slower
   #
   class Generator
+    Context = Struct.new(:context, :opts)
+
     attr_reader :context
     attr_reader :document
 
-    def initialize # :nodoc:
-      @document    = IniParse::Document.new
-      @context     = @document
-      @in_section  = false
+    def initialize(opts = {}) # :nodoc:
+      @document   = IniParse::Document.new
+      @context    = @document
+
+      @in_section = false
+      @opt_stack  = [opts]
     end
 
     def gen # :nodoc:
@@ -90,8 +94,8 @@ module IniParse
     # ==== Returns
     # IniParse::Document
     #
-    def self.gen(&blk)
-      new.gen(&blk)
+    def self.gen(opts = {}, &blk)
+      new(opts).gen(&blk)
     end
 
     # Creates a new section with the given name and adds it to the document.
@@ -108,13 +112,13 @@ module IniParse
         raise LineNotAllowed, "You can't nest sections in INI files."
       end
 
-      @context = Lines::Section.new(name, opts)
+      @context = Lines::Section.new(name, line_options(opts))
       @document.lines << @context
 
       if block_given?
         begin
           @in_section = true
-          yield self
+          with_options(opts) { yield self }
           @context = @document
           blank()
         ensure
@@ -165,6 +169,15 @@ module IniParse
       @context.lines << Lines::Blank.new
     end
 
+    # Wraps lines, setting default options for each.
+    def with_options(opts = {}, &blk) # :nodoc:
+      opts = opts.dup
+      opts.delete(:comment)
+      @opt_stack.push( @opt_stack.last.merge(opts))
+      yield self
+      @opt_stack.pop
+    end
+
     def method_missing(name, *args, &blk) # :nodoc:
       if m = name.to_s.match(/(.*)=$/)
         option(m[1], *args)
@@ -183,12 +196,7 @@ module IniParse
     # rather than the global defaults.
     #
     def line_options(given_opts) # :nodoc:
-      if (@context.kind_of?(IniParse::Lines::Section) &&
-          @context.opts != IniParse::Lines.default_opts)
-        @context.opts.merge({ :comment => nil }.merge(given_opts))
-      else
-        given_opts
-      end
+      @opt_stack.last.empty? ? given_opts : @opt_stack.last.merge(given_opts)
     end
   end
 end
