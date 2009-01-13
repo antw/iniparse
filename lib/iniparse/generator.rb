@@ -71,8 +71,6 @@ module IniParse
   #       max_trains = 500 ; More = slower
   #
   class Generator
-    Context = Struct.new(:context, :opts)
-
     attr_reader :context
     attr_reader :document
 
