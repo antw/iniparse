@@ -1,104 +1,109 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe 'a Line', :shared => true do
-  describe 'when initialized' do
-    it 'should use the default options if an empty hash is given' do
-      @klass.new(*@klass_args).opts.should     == Line.default_opts
-      @klass.new(*@klass_args + [{}]).opts.should == Line.default_opts
-    end
+module IniParse::Test
+  class FakeLine
+    include IniParse::Lines::Line
 
-    it 'should apply custom options if any are given' do
-      @klass.new(*@klass_args + [{:comment_offset => 4}]).opts.should \
-        == Line.default_opts.merge(:comment_offset => 4)
+    def line_contents
+      'fake line'
     end
   end
 end
 
-describe "IniParse::Lines::Line" do
-  Line = IniParse::Lines::Line
+describe 'a Line', :shared => true do
+  it 'should have an +opts+ accessor' do
+    @klass.instance_methods.should include('opts')
+  end
 
-  before(:all) { @klass = IniParse::Lines::Line; @klass_args = [] }
-  it_should_behave_like 'a Line'
+  describe 'when initialized' do
+    it 'should use the default options if an empty hash is given' do
+      @klass.new(*@klass_args).opts.should == IniParse::Lines.default_opts
+      @klass.new(*@klass_args + [{}]).opts.should == IniParse::Lines.default_opts
+    end
 
+    it 'should apply custom options if any are given' do
+      @klass.new(*@klass_args + [{:comment_offset => 4}]).opts.should \
+        == IniParse::Lines.default_opts.merge(:comment_offset => 4)
+    end
+  end
+end
+
+describe "IniParse::Lines::Line module" do
   describe '#to_ini' do
-    it 'should return an empty string' do
-      Line.new.to_ini.should == ''
+    it 'should return +line_contents+' do
+      IniParse::Test::FakeLine.new.to_ini.should == 'fake line'
     end
 
     it 'should preserve line indents' do
-      Line.new(:indent => '    ').to_ini.should == '    '
+      IniParse::Test::FakeLine.new(
+        :indent => '    '
+      ).to_ini.should == '    fake line'
     end
 
     describe 'when a comment is set' do
       it 'should correctly include the comment' do
-        IniParse::Lines::Section.new(
-          'section', :comment => 'comment', :comment_sep => ';',
-          :comment_offset => 10
-        ).to_ini.should == '[section] ; comment'
+        IniParse::Test::FakeLine.new(
+          :comment => 'comment', :comment_sep => ';', :comment_offset => 10
+        ).to_ini.should == 'fake line ; comment'
       end
 
       it 'should correctly indent the comment' do
-        IniParse::Lines::Section.new(
-          'section', :comment => 'comment', :comment_sep => ';',
-          :comment_offset => 15
-        ).to_ini.should == '[section]      ; comment'
+        IniParse::Test::FakeLine.new(
+          :comment => 'comment', :comment_sep => ';', :comment_offset => 15
+        ).to_ini.should == 'fake line      ; comment'
       end
 
       it 'should use ";" as a default comment seperator' do
-        IniParse::Lines::Section.new(
-          'section', :comment => 'comment'
-        ).to_ini.should == '[section] ; comment'
+        IniParse::Test::FakeLine.new(
+          :comment => 'comment'
+        ).to_ini.should == 'fake line ; comment'
       end
 
       it 'should use the correct seperator' do
-        IniParse::Lines::Section.new(
-          'section', :comment => 'comment', :comment_sep => '#'
-        ).to_ini.should == '[section] # comment'
+        IniParse::Test::FakeLine.new(
+          :comment => 'comment', :comment_sep => '#'
+        ).to_ini.should == 'fake line # comment'
       end
 
       it 'should use the ensure a space is added before the comment seperator' do
-        IniParse::Lines::Section.new(
-          'section', :comment => 'comment', :comment_sep => ';',
-          :comment_offset => 0
-        ).to_ini.should == '[section] ; comment'
+        IniParse::Test::FakeLine.new(
+          :comment => 'comment', :comment_sep => ';', :comment_offset => 0
+        ).to_ini.should == 'fake line ; comment'
       end
 
       it 'should not add an extra space if the line is blank' do
-        Line.new(
+        line = IniParse::Test::FakeLine.new(
           :comment => 'comment', :comment_sep => ';', :comment_offset => 0
-        ).to_ini.should == '; comment'
+        )
+
+        line.stub!(:line_contents).and_return('')
+        line.to_ini.should == '; comment'
       end
     end
 
     describe 'when no comment is set' do
       it 'should not add trailing space if :comment_offset has a value' do
-        Line.new(:comment_offset => 10).to_ini.should == ''
+        IniParse::Test::FakeLine.new(:comment_offset => 10).to_ini.should == 'fake line'
       end
 
       it 'should not add a comment seperator :comment_sep has a value' do
-        Line.new(:comment_sep => ';').to_ini.should == ''
+        IniParse::Test::FakeLine.new(:comment_sep => ';').to_ini.should == 'fake line'
       end
     end
   end
 
   describe '#has_comment?' do
     it 'should return true if :comment has a non-blank value' do
-      Line.new(:comment => 'comment').should have_comment
+      IniParse::Test::FakeLine.new(:comment => 'comment').should have_comment
     end
 
     it 'should return true if :comment has a blank value' do
-      Line.new(:comment => '').should have_comment
+      IniParse::Test::FakeLine.new(:comment => '').should have_comment
     end
 
     it 'should return false if :comment has a nil value' do
-      Line.new.should_not have_comment
-      Line.new(:comment => nil).should_not have_comment
-    end
-  end
-
-  describe '.parse' do
-    it 'should raise NotImplementedError' do
-      lambda { Line.parse('', {}) }.should raise_error(NotImplementedError)
+      IniParse::Test::FakeLine.new.should_not have_comment
+      IniParse::Test::FakeLine.new(:comment => nil).should_not have_comment
     end
   end
 end

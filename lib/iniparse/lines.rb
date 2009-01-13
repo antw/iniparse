@@ -1,27 +1,31 @@
 module IniParse
   module Lines
-    # A base class from which other line types should inherit.
-    class Line
-      # Default options for each Line.
-      class_inheritable_reader :default_opts
-      @default_opts = {
+    def default_opts
+      @default_opts ||= {
         :comment        => nil,
         :comment_sep    => ';',
         :comment_offset => 0,
         :indent         => nil
       }.freeze
+    end
 
-      # Holds options for this line.
-      attr_accessor :opts
+    module_function :default_opts
+
+    # A base class from which other line types should inherit.
+    module Line
+      def self.included(base)
+        # Create an options accessor.
+        base.send(:attr_accessor, :opts)
+      end
 
       # ==== Parameters
       # opts<Hash>:: Extra options for the line.
       #
       def initialize(opts = {})
         @opts = if opts.empty?
-          self.default_opts
+          IniParse::Lines.default_opts
         else
-          self.default_opts.merge(opts)
+          IniParse::Lines.default_opts.merge(opts)
         end
       end
 
@@ -45,82 +49,6 @@ module IniParse
         ini
       end
 
-      # Parses a given line from an INI document.
-      #
-      # ==== Returns
-      # Line:: If the line matched a Line type, it will be returned.
-      # nil::  nil is returned if there was no match.
-      #
-      def self.parse(line, opts)
-        raise NotImplementedError, <<-EOS.compress_lines
-          Line is an abstract class from which other line types should
-          inherit; please don't use it directly.
-        EOS
-      end
-
-      # Takes a line from an INI document, strips any leading and trailing
-      # whitespace, and removes the inline comment, returning the updated line
-      # and an options hash.
-      #
-      # An inline comment appears at the end of a line, separated from the
-      # line content with a mandatory space (to differentiate from semi-colons
-      # used in option values) and then a semi-colon or hash.
-      #
-      # Changes to +line+ are done to a copy, not the original string.
-      #
-      # ==== Parameters
-      # line<String>:: A line from an INI document.
-      #
-      # ==== Returns
-      # Array::
-      #   Returns an array with two elements:
-      #     1. The sanitized line.
-      #     2. The options hash for use when creating a new Line instance.
-      #
-      # ==== Examples
-      #   sanitize_line('  my line ; a comment', {})
-      #     # => ['my line', { :comment => 'a comment', :comment_offset => 8,
-      #             :indent => '  ' }]
-      #
-      def self.sanitize_line(line)
-        strip_indent(*strip_comment(line.dup, {}))
-      end
-
-      #######
-      private
-      #######
-
-      # Strips in inline comment from a line (or value), removes trailing
-      # whitespace and sets the comment options as applicable.
-      def self.strip_comment(line, opts)
-        if m = /^(.*?)(?:\s+(;|\#)\s*(.*))$/.match(line) ||
-           m = /(^)(?:(;|\#)\s*(.*))$/.match(line) # Comment lines.
-          opts[:comment] = m[3].rstrip
-          opts[:comment_sep] = m[2]
-          # Remove the line content (since an option value may contain a
-          # semi-colon) _then_ get the index of the comment separator.
-          opts[:comment_offset] =
-            line[(m[1].length..-1)].index(m[2]) + m[1].length
-
-          line = m[1]
-        else
-          line.rstrip!
-        end
-
-        [line, opts]
-      end
-
-      # Removes any leading whitespace from a line, and adds it to the options
-      # hash.
-      def self.strip_indent(line, opts)
-        if m = /^(\s+).*$/.match(line)
-          line.lstrip!
-          opts[:indent] = m[1]
-        end
-
-        [line, opts]
-      end
-
       # Returns the contents for this line.
       def line_contents
         ''
@@ -141,7 +69,9 @@ module IniParse
     #   etc
     #   ...
     #
-    class Section < Line
+    class Section
+      include Line
+
       @regex = /^\[        # Opening bracket
                  ([^\]]+)  # Section name
                  \]$       # Closing bracket
@@ -279,7 +209,9 @@ module IniParse
     #
     #   key = value
     #
-    class Option < Line
+    class Option
+      include Line
+
       @regex = /^(.*)     # Key
                  =
                  (.*?)$   # Value
@@ -326,7 +258,9 @@ module IniParse
 
     # Represents a blank line. Used so that we can preserve blank lines when
     # writing back to the file.
-    class Blank < Line
+    class Blank
+      include Line
+
       def blank?
         true
       end

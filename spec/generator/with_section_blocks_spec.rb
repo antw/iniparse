@@ -200,11 +200,11 @@ describe 'When generating a document using Generator with section blocks,' do
         opts = document.lines.to_a.first.opts
 
         opts[:indent].should \
-          == IniParse::Lines::Line.default_opts[:indent]
+          == IniParse::Lines.default_opts[:indent]
         opts[:comment_sep].should \
-          == IniParse::Lines::Line.default_opts[:comment_sep]
+          == IniParse::Lines.default_opts[:comment_sep]
         opts[:comment_indent].should \
-          == IniParse::Lines::Line.default_opts[:comment_indent]
+          == IniParse::Lines.default_opts[:comment_indent]
       end
     end
 
