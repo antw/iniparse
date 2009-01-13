@@ -5,7 +5,10 @@ INI[http://en.wikipedia.org/wiki/INI_file] configuration and data
 files.
 
 This rubygem is in ongoing development and - specs aside - hasn't yet been
-properly tested in a production environment.
+properly tested in a production environment. If you think you've found a bug,
+or you feed it an INI file which doesn't work as you'd expected, please mail
+me at +anthony at ninecraft dot com+, ideally with a copy of the INI file in
+question.
 
 === Main features
 
@@ -22,10 +25,8 @@ properly tested in a production environment.
   are kept in the same order they are in the original document ensuring that
   nothing gets mangled when writing back to the file.
 
-IniParse is still very incomplete; while parsing of INI files is handled,
-support for writing back and generating new INI files easily is yet to be
-added. In addition, if you don't need the above mentioned features, you may
-find the simpler IniFile gem does all you need.
+If you don't need the above mentioned features, you may find the simpler
+IniFile gem does all you need.
 
 === Opening an INI file
 
