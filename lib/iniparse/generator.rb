@@ -168,7 +168,7 @@ module IniParse
     end
 
     # Wraps lines, setting default options for each.
-    def with_options(opts = {}, &blk) # :nodoc:
+    def with_options(opts = {}) # :nodoc:
       opts = opts.dup
       opts.delete(:comment)
       @opt_stack.push( @opt_stack.last.merge(opts))
