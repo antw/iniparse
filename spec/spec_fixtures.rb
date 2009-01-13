@@ -7,7 +7,7 @@ module IniParse
         if @@fixtures.has_key?(fix)
           @@fixtures[fix]
         else
-          File.read(Pathname(__FILE__).dirname.expand_path / 'fixtures' / fix)
+          @@fixtures[fix] = File.read(Pathname(__FILE__).dirname.expand_path / 'fixtures' / fix)
         end
       end
 
