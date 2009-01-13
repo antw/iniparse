@@ -183,7 +183,8 @@ module IniParse
     # rather than the global defaults.
     #
     def line_options(given_opts) # :nodoc:
-      if @context.kind_of?(IniParse::Lines::Section)
+      if (@context.kind_of?(IniParse::Lines::Section) &&
+          @context.opts != IniParse::Lines.default_opts)
         @context.opts.merge({ :comment => nil }.merge(given_opts))
       else
         given_opts

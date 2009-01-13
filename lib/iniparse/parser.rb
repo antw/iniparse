@@ -11,7 +11,7 @@ module IniParse
     # source<String>:: The source string.
     #
     def initialize(source)
-      @source = source
+      @source = source.dup
     end
 
     # Parses the source string and returns the resulting data structure.
@@ -36,10 +36,11 @@ module IniParse
       # IniParse::ParseError: If the line could not be parsed.
       #
       def parse_line(line)
-        sanitized, opts = strip_indent(*strip_comment(line.dup, {}))
+        sanitized, opts = strip_indent(*strip_comment(line, {}))
 
-        parsed = @@parse_types.reduce(nil) do |memo, type|
-          memo ||= type.parse(sanitized, opts)
+        parsed = nil
+        @@parse_types.each do |type|
+          break if (parsed = type.parse(sanitized, opts))
         end
 
         if parsed.nil?
