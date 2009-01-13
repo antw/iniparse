@@ -137,6 +137,16 @@ describe 'When generating a document using Generator with section blocks,' do
       it "should use the parent section's options as a base" do
         document = IniParse::Generator.gen do |doc|
           doc.section("a section", :indent => "    ") do |section|
+            section.option("my option", "a value")
+          end
+        end
+
+        document["a section"].option("my option").opts[:indent].should == "    "
+      end
+
+      it "should allow customisation of the parent's options" do
+        document = IniParse::Generator.gen do |doc|
+          doc.section("a section", :indent => "    ") do |section|
             section.option("my option", "a value", :comment_sep => "#")
           end
         end
@@ -222,6 +232,17 @@ describe 'When generating a document using Generator with section blocks,' do
       end
 
       it "should use the parent section's line options as a base" do
+        document = IniParse::Generator.gen do |doc|
+          doc.section("a section", :comment_offset => 5) do |section|
+            section.comment("My comment")
+          end
+        end
+
+        opts = document['a section'].lines.to_a.first.opts
+        opts[:comment_offset].should == 5
+      end
+
+      it "should allow customisation of the parent's options" do
         document = IniParse::Generator.gen do |doc|
           doc.section("a section", :comment_offset => 5) do |section|
             section.comment("My comment", :comment_sep => "#")
