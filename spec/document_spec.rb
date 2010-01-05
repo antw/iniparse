@@ -1,12 +1,14 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe "IniParse::Document" do
-  it 'should have a +sections+ reader' do
-    IniParse::Document.instance_methods.should include('lines')
+  it 'should have a +lines+ reader' do
+    methods = IniParse::Document.instance_methods.map { |m| m.to_sym }
+    methods.should include(:lines)
   end
 
-  it 'should not have a +sections+ writer' do
-    IniParse::Document.instance_methods.should_not include('lines=')
+  it 'should not have a +lines+ writer' do
+    methods = IniParse::Document.instance_methods.map { |m| m.to_sym }
+    methods.should_not include(:lines=)
   end
 
   it 'should delegate #[] to +lines+' do
