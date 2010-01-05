@@ -23,6 +23,20 @@ describe "IniParse::Document" do
     doc.each { |l| }
   end
 
+  it 'should be enumerable' do
+    IniParse::Document.included_modules.should include(Enumerable)
+
+    sections = [
+      IniParse::Lines::Section.new('first section'),
+      IniParse::Lines::Section.new('second section')
+    ]
+
+    doc = IniParse::Document.new
+    doc.lines << sections[0] << sections[1]
+
+    doc.map { |line| line }.should == sections
+  end
+
   describe '#has_section?' do
     before(:all) do
       @doc = IniParse::Document.new

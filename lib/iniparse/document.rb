@@ -1,6 +1,8 @@
 module IniParse
   # Represents an INI document.
   class Document
+    include Enumerable
+
     attr_reader   :lines
     attr_accessor :path
 
