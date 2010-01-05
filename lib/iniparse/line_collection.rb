@@ -90,7 +90,7 @@ module IniParse
     # Returns this collection as a hash. Does not contain blank and comment
     # lines.
     def to_hash
-      Hash[ map { |line| [line.key, line] } ]
+      Hash[ *(map { |line| [line.key, line] }).flatten ]
     end
 
     alias_method :to_h, :to_hash
