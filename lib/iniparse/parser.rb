@@ -88,5 +88,5 @@ module IniParse
         [line, opts]
       end
     end
-  end
-end
+  end # Parser
+end # IniParse
