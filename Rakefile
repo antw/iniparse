@@ -1,100 +1,75 @@
-require 'rubygems'
 require 'rake/clean'
-require 'rake/gempackagetask'
-require 'rubygems/specification'
-require 'date'
+require 'rake/rdoctask'
 require 'spec/rake/spectask'
 
-begin
-  require 'hanna/rdoctask'
-rescue LoadError
-  require 'rake/rdoctask'
-end
-
-require 'lib/iniparse/version'
-
-GEM = 'iniparse'
-GEM_VERSION = IniParse::VERSION
-
 ##############################################################################
-# Packaging & Installation
+# Packaging & Installation.
 ##############################################################################
 
 CLEAN.include ['pkg', '*.gem', 'doc', 'coverage']
 
-spec = Gem::Specification.new do |s|
-  s.name        = GEM
-  s.version     = GEM_VERSION
-  s.platform    = Gem::Platform::RUBY
-  s.summary     = "A pure Ruby library for parsing INI documents."
-  s.description = s.summary
-  s.author      = 'Anthony Williams'
-  s.email       = 'anthony@ninecraft.com'
-  s.homepage    = 'http://github.com/anthonyw/iniparse'
+begin
+  require 'jeweler'
 
-  # rdoc
-  s.has_rdoc = true
-  s.extra_rdoc_files = %w(README.rdoc LICENSE)
+  Jeweler::Tasks.new do |gem|
+    gem.name        = 'iniparse'
+    gem.platform    = Gem::Platform::RUBY
+    gem.summary     = 'A pure Ruby library for parsing INI documents.'
+    gem.description = gem.summary
+    gem.author      = 'Anthony Williams'
+    gem.email       = 'anthony@ninecraft.com'
+    gem.homepage    = 'http://github.com/antw/iniparse'
 
-  # Dependencies
-  s.add_dependency 'extlib', '>= 0.9.9'
+    gem.files       = %w(LICENSE README.rdoc Rakefile VERSION) +
+                      Dir.glob("{lib,spec}/**/*")
 
-  s.require_path = 'lib'
-  s.files = %w(LICENSE README.rdoc Rakefile) + Dir.glob("{lib,spec}/**/*")
-end
+    # rdoc
+    gem.has_rdoc = true
+    gem.extra_rdoc_files = %w(README.rdoc LICENSE VERSION)
 
-
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.gem_spec = spec
-end
-
-desc "Run :package and install the resulting .gem"
-task :install => :package do
-  sh %(gem install --local pkg/#{GEM}-#{GEM_VERSION}.gem)
-end
-
-desc "Run :clean and uninstall the .gem"
-task :uninstall => :clean do
-  sh %(gem uninstall #{GEM})
-end
-
-desc "Create a gemspec file"
-task :make_spec do
-  File.open("#{GEM}.gemspec", "w") do |file|
-    file.puts spec.to_ruby
+    # Dependencies
+    gem.add_dependency 'extlib', '>= 0.9.9'
+    gem.add_development_dependency 'rspec', '>= 1.2.0'
   end
+
+  Jeweler::GemcutterTasks.new
+  Jeweler::RubyforgeTasks.new
+rescue LoadError
+  puts 'Jeweler (or a dependency) not available. Install it with: gem ' \
+       'install jeweler'
 end
 
 ##############################################################################
 # Documentation
 ##############################################################################
-task :doc => ['doc:rdoc']
-namespace :doc do
 
-  Rake::RDocTask.new do |rdoc|
-    rdoc.rdoc_files.add(%w(LICENSE README.rdoc lib/**/*.rb))
-    rdoc.main = "README.rdoc"
-    rdoc.title = "IniParse API Documentation"
-    rdoc.options << "--line-numbers" << "--inline-source"
-    rdoc.rdoc_dir = 'doc'
-  end
+Rake::RDocTask.new do |rdoc|
+  version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title = "iniparse #{version}"
+  rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
 ##############################################################################
-# rSpec & rcov
+# Tests & Metrics.
 ##############################################################################
 
 desc "Run all examples"
-Spec::Rake::SpecTask.new('spec') do |t|
-  t.spec_files = FileList['spec/**/*.rb']
-  t.spec_opts = ['-c -f s']
+Spec::Rake::SpecTask.new(:spec) do |spec|
+  spec.libs << 'lib' << 'spec'
+  spec.spec_files = FileList['spec/**/*_spec.rb']
+  spec.spec_opts = ['-c -f s']
 end
 
 desc "Run all examples with RCov"
-Spec::Rake::SpecTask.new('spec:rcov') do |t|
-  t.spec_files = FileList['spec/**/*.rb']
-  t.spec_opts = ['-c -f s']
-  t.rcov = true
-  t.rcov_opts = ['--exclude', 'spec']
+Spec::Rake::SpecTask.new(:rcov) do |spec|
+  spec.libs << 'lib' << 'spec'
+  spec.pattern = 'spec/**/*_spec.rb'
+  spec.spec_opts = ['-c -f s']
+  spec.rcov = true
+  spec.rcov_opts = ['--exclude', 'spec']
 end
+
+task :spec => :check_dependencies

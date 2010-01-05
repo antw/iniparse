@@ -7,9 +7,12 @@ require dir / 'generator'
 require dir / 'line_collection'
 require dir / 'lines'
 require dir / 'parser'
-require dir / 'version'
 
 module IniParse
+  VERSION = File.read(
+    Pathname(__FILE__).dirname.expand_path / '..' / 'VERSION'
+  ).strip
+
   # A base class for IniParse errors.
   class IniParseError < StandardError; end
 
