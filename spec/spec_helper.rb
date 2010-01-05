@@ -1,4 +1,6 @@
 $:.push File.join(File.dirname(__FILE__), '..', 'lib')
+
+require 'rubygems'
 require 'iniparse'
 require File.join(File.dirname(__FILE__), 'spec_fixtures')
 
