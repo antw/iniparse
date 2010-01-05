@@ -10,6 +10,8 @@ or you feed it an INI file which doesn't work as you'd expected, please mail
 me at +anthony at ninecraft dot com+, ideally with a copy of the INI file in
 question.
 
+IniParse tests pass on Ruby 1.8.6p383, 1.8.7p174, and 1.9.1p243.
+
 === Main features
 
 * <b>Support for duplicate options.</b> While not common, some INI files
