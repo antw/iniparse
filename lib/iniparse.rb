@@ -1,17 +1,13 @@
-require 'extlib'
+dir = File.expand_path('iniparse', File.dirname(__FILE__))
 
-dir = Pathname(__FILE__).dirname.expand_path / 'iniparse'
-
-require dir / 'document'
-require dir / 'generator'
-require dir / 'line_collection'
-require dir / 'lines'
-require dir / 'parser'
+require File.join(dir, 'document')
+require File.join(dir, 'generator')
+require File.join(dir, 'line_collection')
+require File.join(dir, 'lines')
+require File.join(dir, 'parser')
 
 module IniParse
-  VERSION = File.read(
-    Pathname(__FILE__).dirname.expand_path / '..' / 'VERSION'
-  ).strip
+  VERSION = File.read('VERSION').strip
 
   # A base class for IniParse errors.
   class IniParseError < StandardError; end

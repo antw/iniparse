@@ -57,7 +57,7 @@ module IniParse
     #
     def save(path = nil)
       @path = path if path
-      raise IniParseError, 'No path given to Document#save' if @path.blank?
+      raise IniParseError, 'No path given to Document#save' if @path !~ /\S/
       File.open(@path, 'w') { |f| f.write(self.to_ini) }
     end
   end

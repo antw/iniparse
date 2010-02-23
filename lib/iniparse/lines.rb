@@ -24,7 +24,7 @@ module IniParse
         ini = @indent + ini if @indent
 
         if has_comment?
-          ini += ' ' unless ini.blank?
+          ini += ' ' if ini =~ /\S/ # not blank
           ini  = ini.ljust(@comment_offset)
           ini += comment
         end
@@ -41,6 +41,11 @@ module IniParse
       # separator at the beginning of the string.
       def comment
         '%s %s' % [@comment_sep, @comment]
+      end
+
+      # Returns whether this is a line which has no data.
+      def blank?
+        false
       end
     end
 
@@ -249,7 +254,7 @@ module IniParse
       end
 
       def self.parse(line, opts)
-        if line.blank?
+        if line !~ /\S/ # blank
           if opts[:comment].nil?
             [:blank]
           else
@@ -283,7 +288,7 @@ module IniParse
       # but without a comment, just the seperator will be returned.
       #
       def comment
-        @comment.blank? ? @comment_sep : super
+        @comment !~ /\S/ ? @comment_sep : super
       end
     end
   end # Lines

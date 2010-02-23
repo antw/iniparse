@@ -250,24 +250,22 @@ describe 'IniParse::Lines::Section' do
       )
       @section.lines << IniParse::Lines::Option.new('b', 'val2')
 
-      @section.to_ini.should == <<-INI.margin
-        [a section]
-        a = val1
-
-        ; my comment
-        b = val2
-      INI
+      @section.to_ini.should ==
+        "[a section]\n" \
+        "a = val1\n" \
+        "\n" \
+        "; my comment\n" \
+        "b = val2"
     end
 
     it 'should include duplicate lines' do
       @section.lines << IniParse::Lines::Option.new('a', 'val1')
       @section.lines << IniParse::Lines::Option.new('a', 'val2')
 
-      @section.to_ini.should == <<-INI.margin
-        [a section]
-        a = val1
-        a = val2
-      INI
+      @section.to_ini.should ==
+        "[a section]\n" \
+        "a = val1\n" \
+        "a = val2"
     end
   end
 

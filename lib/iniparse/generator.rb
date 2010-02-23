@@ -145,10 +145,9 @@ module IniParse
       )
     rescue LineNotAllowed
       # Tried to add an Option to a Document.
-      raise NoSectionError, <<-EOS.compress_lines
-        Your INI document contains an option before the first section is
-        declared which is not allowed.
-      EOS
+      raise NoSectionError,
+        'Your INI document contains an option before the first section is ' \
+        'declared which is not allowed.'
     end
 
     # Adds a new comment line to the document.

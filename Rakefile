@@ -60,7 +60,7 @@ desc "Run all examples"
 Spec::Rake::SpecTask.new(:spec) do |spec|
   spec.libs << 'lib' << 'spec'
   spec.spec_files = FileList['spec/**/*_spec.rb']
-  spec.spec_opts = ['-c -f s']
+  spec.spec_opts = ['-c -f p']
 end
 
 desc "Run all examples with RCov"

@@ -1,9 +1,27 @@
 module IniParse
   class Parser
-    cattr_accessor :parse_types
-    @@parse_types = [ IniParse::Lines::Option,
-                      IniParse::Lines::Section,
-                      IniParse::Lines::Blank ]
+
+    # Returns the line types.
+    #
+    # ==== Returns
+    # Array
+    #
+    def self.parse_types
+      @@parse_types ||= []
+    end
+
+    # Sets the line types. Handy if you want to add your own custom Line
+    # classes.
+    #
+    # ==== Parameters
+    # types<Array[IniParse::Lines::Line]>:: An array containing Line classes.
+    #
+    def self.parse_types=(types)
+      parse_types.replace(types)
+    end
+
+    self.parse_types = [ IniParse::Lines::Option,
+      IniParse::Lines::Section, IniParse::Lines::Blank ]
 
     # Creates a new Parser instance for parsing string +source+.
     #
@@ -44,10 +62,9 @@ module IniParse
         end
 
         if parsed.nil?
-          raise IniParse::ParseError, <<-EOS.compress_lines
-            A line of your INI document could not be parsed to a LineType:
-            '#{line}'.
-          EOS
+          raise IniParse::ParseError,
+            "A line of your INI document could not be parsed to a " \
+            "LineType: '#{line}'."
         end
 
         parsed
