@@ -28,12 +28,10 @@ begin
     gem.extra_rdoc_files = %w(README.rdoc LICENSE VERSION)
 
     # Dependencies
-    gem.add_dependency 'extlib', '>= 0.9.9'
     gem.add_development_dependency 'rspec', '>= 1.2.0'
   end
 
   Jeweler::GemcutterTasks.new
-  Jeweler::RubyforgeTasks.new
 rescue LoadError
   puts 'Jeweler (or a dependency) not available. Install it with: gem ' \
        'install jeweler'
