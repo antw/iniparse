@@ -7,7 +7,7 @@ require File.join(dir, 'lines')
 require File.join(dir, 'parser')
 
 module IniParse
-  VERSION = File.read('VERSION').strip
+  VERSION = File.read(File.expand_path('../../VERSION', __FILE__)).strip
 
   # A base class for IniParse errors.
   class IniParseError < StandardError; end
