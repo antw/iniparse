@@ -25,7 +25,7 @@ begin
 
     # rdoc
     gem.has_rdoc = true
-    gem.extra_rdoc_files = %w(README.rdoc LICENSE VERSION)
+    gem.extra_rdoc_files = %w(README.rdoc History LICENSE VERSION)
 
     # Dependencies
     gem.add_development_dependency 'rspec', '>= 1.2.0'
