@@ -200,9 +200,9 @@ module IniParse
     class Option
       include Line
 
-      @regex = /^(.*)     # Key
+      @regex = /^\s*([^=]+)  # Option
                  =
-                 (.*?)$   # Value
+                 (.*?)$      # Value
                /x
 
       attr_accessor :key, :value

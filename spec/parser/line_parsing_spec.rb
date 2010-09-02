@@ -154,6 +154,21 @@ describe 'Parsing a line' do
     end
   end
 
+
+  describe 'with "key = EEjDDJJjDJDJD233232=="' do
+    it 'should include the "equals" in the option value' do
+      IniParse::Parser.parse_line('key = EEjDDJJjDJDJD233232==').should \
+        be_option_tuple('key', 'EEjDDJJjDJDJD233232==')
+    end
+  end
+
+  describe 'with "key = ==EEjDDJJjDJDJD233232"' do
+    it 'should include the "equals" in the option value' do
+      IniParse::Parser.parse_line('key = ==EEjDDJJjDJDJD233232').should \
+        be_option_tuple('key', '==EEjDDJJjDJDJD233232')
+    end
+  end
+
   describe 'with "key.two = value"' do
     it 'should return an option tuple with the correct key' do
       IniParse::Parser.parse_line('key.two = value').should \
