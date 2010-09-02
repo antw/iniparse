@@ -4,3 +4,5 @@ doc/*
 pkg/*
 *.rbc
 *.swp
+*.gem
+rdoc

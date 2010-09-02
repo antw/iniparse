@@ -4,80 +4,63 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{iniparse}
-  s.version = "1.1.3"
-
+  s.specification_version = 2 if s.respond_to? :specification_version=
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Anthony Williams"]
-  s.date = %q{2010-03-04}
-  s.description = %q{A pure Ruby library for parsing INI documents.}
-  s.email = %q{anthony@ninecraft.com}
-  s.extra_rdoc_files = [
-    "History",
-     "LICENSE",
-     "README.rdoc",
-     "VERSION"
-  ]
-  s.files = [
-    "LICENSE",
-     "README.rdoc",
-     "Rakefile",
-     "VERSION",
-     "lib/iniparse.rb",
-     "lib/iniparse/document.rb",
-     "lib/iniparse/generator.rb",
-     "lib/iniparse/line_collection.rb",
-     "lib/iniparse/lines.rb",
-     "lib/iniparse/parser.rb",
-     "spec/document_spec.rb",
-     "spec/fixture_spec.rb",
-     "spec/fixtures/openttd.ini",
-     "spec/fixtures/race07.ini",
-     "spec/fixtures/smb.ini",
-     "spec/generator/method_missing_spec.rb",
-     "spec/generator/with_section_blocks_spec.rb",
-     "spec/generator/without_section_blocks_spec.rb",
-     "spec/iniparse_spec.rb",
-     "spec/line_collection_spec.rb",
-     "spec/lines_spec.rb",
-     "spec/parser/document_parsing_spec.rb",
-     "spec/parser/line_parsing_spec.rb",
-     "spec/spec_fixtures.rb",
-     "spec/spec_helper.rb",
-     "spec/spec_helper_spec.rb"
-  ]
-  s.homepage = %q{http://github.com/antw/iniparse}
-  s.rdoc_options = ["--charset=UTF-8"]
-  s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.6}
-  s.summary = %q{A pure Ruby library for parsing INI documents.}
-  s.test_files = [
-    "spec/document_spec.rb",
-     "spec/fixture_spec.rb",
-     "spec/generator/method_missing_spec.rb",
-     "spec/generator/with_section_blocks_spec.rb",
-     "spec/generator/without_section_blocks_spec.rb",
-     "spec/iniparse_spec.rb",
-     "spec/line_collection_spec.rb",
-     "spec/lines_spec.rb",
-     "spec/parser/document_parsing_spec.rb",
-     "spec/parser/line_parsing_spec.rb",
-     "spec/spec_fixtures.rb",
-     "spec/spec_helper.rb",
-     "spec/spec_helper_spec.rb"
-  ]
+  s.rubygems_version = '1.3.5'
 
-  if s.respond_to? :specification_version then
-    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
-    s.specification_version = 3
+  ## Leave these as is they will be modified for you by the rake gemspec task.
+  ## If your rubyforge_project name is different, then edit it and comment out
+  ## the sub! line in the Rakefile
+  s.name              = 'iniparse'
+  s.version           = '1.1.3'
+  s.date              = '2010-09-02'
+  s.rubyforge_project = 'iniparse'
 
-    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_development_dependency(%q<rspec>, [">= 1.2.0"])
-    else
-      s.add_dependency(%q<rspec>, [">= 1.2.0"])
-    end
-  else
-    s.add_dependency(%q<rspec>, [">= 1.2.0"])
-  end
+  s.summary           = 'A pure Ruby library for parsing INI documents.'
+  s.authors           = ['Anthony Williams']
+  s.email             = 'hi@antw.me'
+  s.homepage          = 'http://github.com/antw/iniparse'
+
+  s.require_paths     = %w(lib)
+
+  s.rdoc_options      = ['--charset=UTF-8']
+  s.extra_rdoc_files  = %w(History LICENSE README.rdoc)
+
+  # Dependencies.
+  s.add_development_dependency('rspec', '>= 1.3.0')
+
+  # = MANIFEST =
+  s.files = %w[
+    History
+    LICENSE
+    README.rdoc
+    Rakefile
+    TODO
+    iniparse.gemspec
+    lib/iniparse.rb
+    lib/iniparse/document.rb
+    lib/iniparse/generator.rb
+    lib/iniparse/line_collection.rb
+    lib/iniparse/lines.rb
+    lib/iniparse/parser.rb
+    spec/document_spec.rb
+    spec/fixture_spec.rb
+    spec/fixtures/openttd.ini
+    spec/fixtures/race07.ini
+    spec/fixtures/smb.ini
+    spec/generator/method_missing_spec.rb
+    spec/generator/with_section_blocks_spec.rb
+    spec/generator/without_section_blocks_spec.rb
+    spec/iniparse_spec.rb
+    spec/line_collection_spec.rb
+    spec/lines_spec.rb
+    spec/parser/document_parsing_spec.rb
+    spec/parser/line_parsing_spec.rb
+    spec/spec_fixtures.rb
+    spec/spec_helper.rb
+    spec/spec_helper_spec.rb
+  ]
+  # = MANIFEST =
+
+  s.test_files = s.files.select { |path| path =~ /^spec\/.*\.rb/ }
 end
-
