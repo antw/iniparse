@@ -1,6 +1,8 @@
 $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'rubygems'
+require 'rspec'
+
 require 'iniparse'
 require File.join(File.dirname(__FILE__), 'spec_fixtures')
 
@@ -161,6 +163,6 @@ module IniParse
   end
 end
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   config.include(IniParse::Test::Helpers)
 end

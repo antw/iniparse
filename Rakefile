@@ -4,7 +4,7 @@ require 'date'
 
 require 'rake/clean'
 require 'rake/rdoctask'
-require 'spec/rake/spectask'
+require 'rspec/core/rake_task'
 
 ##############################################################################
 # Helpers
@@ -123,20 +123,6 @@ end
 # Tests & Metrics.
 ##############################################################################
 
-desc "Run all examples"
-Spec::Rake::SpecTask.new(:spec) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.spec_files = FileList['spec/**/*_spec.rb']
-  spec.spec_opts = ['-c -f p']
-end
-
-desc "Run all examples with RCov"
-Spec::Rake::SpecTask.new(:rcov) do |spec|
-  spec.libs << 'lib' << 'spec'
+RSpec::Core::RakeTask.new('spec') do |spec|
   spec.pattern = 'spec/**/*_spec.rb'
-  spec.spec_opts = ['-c -f s']
-  spec.rcov = true
-  spec.rcov_opts = ['--exclude', 'spec']
 end
-
-task :spec => :check_dependencies

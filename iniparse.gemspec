@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files  = %w(History LICENSE README.rdoc)
 
   # Dependencies.
-  s.add_development_dependency('rspec', '>= 1.3.0')
+  s.add_development_dependency('rspec', '>= 2.0.0.beta.20')
 
   # = MANIFEST =
   s.files = %w[

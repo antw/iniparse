@@ -1,10 +1,10 @@
-require File.dirname(__FILE__) + '/spec_helper'
+require 'spec_helper'
 
 # ----------------------------------------------------------------------------
 # Shared specs for all Collection types...
 # ----------------------------------------------------------------------------
 
-describe "LineCollection", :shared => true do
+share_examples_for "LineCollection" do
   before(:each) do
     @collection << (@c1 = IniParse::Lines::Comment.new)
     @collection <<  @i1
@@ -180,6 +180,7 @@ describe 'IniParse::OptionCollection' do
 
   describe '#keys' do
     it 'should handle duplicates' do
+      @collection << @i1 << @i2 << @i3
       @collection << IniParse::Lines::Option.new('first', 'v5')
       @collection.keys.should == ['first', 'second', 'third']
     end
@@ -205,6 +206,7 @@ describe 'IniParse::SectionCollection' do
 
     it 'should add merge Section with the other, if it is a duplicate' do
       new_section = IniParse::Lines::Section.new('first')
+      @collection << @i1
       @i1.should_receive(:merge!).with(new_section).once
       @collection << new_section
     end

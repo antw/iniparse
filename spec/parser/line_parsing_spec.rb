@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require 'spec_helper'
 
 # Tests parsing of individual, out of context, line types using #parse_line.
 
