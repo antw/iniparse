@@ -47,4 +47,27 @@ describe 'Parsing a document' do
     lambda { IniParse::Parser.new(fixture(:invalid_line)).parse }.should \
       raise_error(IniParse::ParseError)
   end
+
+  describe 'when a section name contains "="' do
+    before(:all) do
+      @doc = IniParse::Parser.new(fixture(:section_with_equals)).parse
+    end
+
+    it 'should have two sections' do
+      @doc.lines.to_a.length.should == 2
+    end
+
+    it 'should have one section' do
+      @doc.lines.keys.should == ['first_section = name',
+                                 'another_section = a name']
+    end
+
+    it 'should have one option belonging to `first_section = name`' do
+      @doc['first_section = name']['key'].should == 'value'
+    end
+
+    it 'should have one option belonging to `another_section = a name`' do
+      @doc['another_section = a name']['another'].should == 'thing'
+    end
+  end
 end

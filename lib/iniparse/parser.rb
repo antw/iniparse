@@ -20,8 +20,8 @@ module IniParse
       parse_types.replace(types)
     end
 
-    self.parse_types = [ IniParse::Lines::Option,
-      IniParse::Lines::Section, IniParse::Lines::Blank ]
+    self.parse_types = [ IniParse::Lines::Section,
+      IniParse::Lines::Option, IniParse::Lines::Blank ]
 
     # Creates a new Parser instance for parsing string +source+.
     #

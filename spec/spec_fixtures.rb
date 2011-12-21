@@ -46,3 +46,10 @@ FIX
 IniParse::Test::Fixtures[:invalid_line] = <<-FIX.gsub(/^  /, '')
   this line is not valid
 FIX
+
+IniParse::Test::Fixtures[:section_with_equals] = <<-FIX.gsub(/^  /, '')
+  [first_section = name]
+  key = value
+  [another_section = a name]
+  another = thing
+FIX
