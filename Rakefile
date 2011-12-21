@@ -3,7 +3,7 @@ require 'rake'
 require 'date'
 
 require 'rake/clean'
-require 'rake/rdoctask'
+require 'rdoc/task'
 require 'rspec/core/rake_task'
 
 ##############################################################################
