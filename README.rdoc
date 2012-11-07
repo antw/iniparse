@@ -34,7 +34,7 @@ IniFile gem does all you need.
 
 Parsing an INI file is fairly simple:
 
-    IniParse.parse( File.open('path/to/my/file.ini') ) # => IniParse::Document
+    IniParse.parse( File.read('path/to/my/file.ini') ) # => IniParse::Document
 
 IniParse.parse returns an IniParse::Document instance which represents the
 passed "INI string". Assuming you know the structure of the document, you can
