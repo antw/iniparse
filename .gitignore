@@ -6,3 +6,4 @@ pkg/*
 *.swp
 *.gem
 rdoc
+Gemfile.lock
