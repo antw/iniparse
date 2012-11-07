@@ -53,3 +53,10 @@ IniParse::Test::Fixtures[:section_with_equals] = <<-FIX.gsub(/^  /, '')
   [another_section = a name]
   another = thing
 FIX
+
+IniParse::Test::Fixtures[:comment_line] = <<-FIX.gsub(/^  /, '')
+  [first_section]
+  ; block comment ;
+  ; with more lines ;
+  key = value
+FIX

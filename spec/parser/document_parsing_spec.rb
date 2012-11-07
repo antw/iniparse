@@ -37,6 +37,15 @@ describe 'Parsing a document' do
     @doc['first_section'].lines.to_a.first.should be_kind_of(IniParse::Lines::Blank)
   end
 
+  it 'should permit comments on their own line' do
+    lambda {
+      @doc = IniParse::Parser.new(fixture(:comment_line)).parse
+    }.should_not raise_error
+
+    line = @doc['first_section'].lines.to_a.first
+    line.comment.should eql('; block comment ;')
+  end
+
   it 'should raise an error if an option preceeds the first section' do
     lambda {
       IniParse::Parser.new(fixture(:option_before_section)).parse
