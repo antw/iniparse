@@ -1,4 +1,4 @@
-= IniParse
+= IniParse {<img src="https://secure.travis-ci.org/antw/iniparse.png" alt="Build Status" />}[http://travis-ci.org/antw/iniparse]
 
 IniParse is a pure Ruby library for parsing
 INI[http://en.wikipedia.org/wiki/INI_file] configuration and data
