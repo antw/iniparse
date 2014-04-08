@@ -76,10 +76,9 @@ describe 'When generating a document using Generator with section blocks using m
 
   describe 'adding a option' do
     describe 'when the context is a Document' do
-      it "should raise a NoSectionError" do
-        lambda do
-          IniParse::Generator.gen { |doc| doc.my_option = "a value" }
-        end.should raise_error(IniParse::NoSectionError)
+      it "adds the option to an __anonymous__ section" do
+        doc = IniParse::Generator.gen { |doc| doc.my_option = "a value" }
+        doc['__anonymous__']['my_option'].should eql('a value')
       end
     end
 

@@ -193,6 +193,28 @@ module IniParse
       end
     end
 
+    # Stores options which appear at the beginning of a file, without a
+    # preceding section.
+    class AnonymousSection < Section
+      def initialize
+        super('__anonymous__')
+      end
+
+      def to_ini
+        # Remove the leading space which is added by joining the blank line
+        # content with the options.
+        super.gsub(/\A\n/, '')
+      end
+
+      #######
+      private
+      #######
+
+      def line_contents
+        ''
+      end
+    end
+
     # Represents probably the most common type of line in an INI document:
     # an option. Consists of a key and value, usually separated with an =.
     #

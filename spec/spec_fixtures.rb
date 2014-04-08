@@ -39,8 +39,9 @@ IniParse::Test::Fixtures[:blank_in_section] = <<-FIX.gsub(/^  /, '')
 FIX
 
 IniParse::Test::Fixtures[:option_before_section] = <<-FIX.gsub(/^  /, '')
-  key = value
-  [first_section]
+  foo = bar
+  [foo]
+  another = thing
 FIX
 
 IniParse::Test::Fixtures[:invalid_line] = <<-FIX.gsub(/^  /, '')

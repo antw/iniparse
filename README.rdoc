@@ -64,6 +64,22 @@ be supplied to you.
     document['my_section']['key']
       # => ['value', 'another value', 'third value']
 
+Options which appear before the first section will be added to a section called
+"__anonymous__".
+
+    document = IniParse.parse <<-EOS
+      driver = true
+
+      [driver]
+      key = value
+    EOS
+
+    document['__anonymous__']['driver']
+      # => true
+
+    document['driver']['key']
+      # => 'value'
+
 === Updating an INI file
 
     document['a_section']['an_option']

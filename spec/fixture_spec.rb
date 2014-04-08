@@ -173,4 +173,14 @@ describe "IniParse" do
       IniParse.parse(@fixture).to_ini.should == @fixture
     end
   end
+
+  describe 'option before section fixture' do
+    before(:all) do
+      @fixture = fixture(:option_before_section)
+    end
+
+    it 'should be identical to the original when calling #to_ini' do
+      IniParse.parse(@fixture).to_ini.should == @fixture
+    end
+  end
 end

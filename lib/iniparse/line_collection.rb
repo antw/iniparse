@@ -110,8 +110,10 @@ module IniParse
 
     def <<(line)
       if line.kind_of?(IniParse::Lines::Option)
-        raise IniParse::LineNotAllowed,
-          "You can't add an Option to a SectionCollection."
+        option = line
+        line   = IniParse::Lines::AnonymousSection.new
+
+        line.lines << option if option
       end
 
       if line.blank? || (! has_key?(line.key))

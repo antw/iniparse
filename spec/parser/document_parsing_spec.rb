@@ -46,10 +46,12 @@ describe 'Parsing a document' do
     line.comment.should eql('; block comment ;')
   end
 
-  it 'should raise an error if an option preceeds the first section' do
-    lambda {
-      IniParse::Parser.new(fixture(:option_before_section)).parse
-    }.should raise_error(IniParse::NoSectionError)
+  it 'should permit options before the first section' do
+    doc = IniParse::Parser.new(fixture(:option_before_section)).parse
+
+    doc.lines.should have_key('__anonymous__')
+    doc['__anonymous__']['foo'].should eql('bar')
+    doc['foo']['another'].should eql('thing')
   end
 
   it 'should raise ParseError if a line could not be parsed' do

@@ -57,9 +57,9 @@ describe 'When generating a document using Generator without section blocks,' do
     end
 
     describe 'when the context is a Document' do
-      it "should raise a NoSectionError" do
-        lambda { @gen.option("key", "value") }.should \
-          raise_error(IniParse::NoSectionError)
+      it "should add the option to an __anonymous__ section" do
+        @gen.option("key", "value")
+        @gen.document['__anonymous__']['key'].should eql('value')
       end
     end
 

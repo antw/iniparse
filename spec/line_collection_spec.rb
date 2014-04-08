@@ -199,11 +199,6 @@ describe 'IniParse::SectionCollection' do
   it_should_behave_like 'LineCollection'
 
   describe '#<<' do
-    it 'should raise a LineNotAllowed exception if an Option is pushed' do
-      lambda { @collection << IniParse::Lines::Option.new('k', 'v') }.should \
-        raise_error(IniParse::LineNotAllowed)
-    end
-
     it 'should add merge Section with the other, if it is a duplicate' do
       new_section = IniParse::Lines::Section.new('first')
       @collection << @i1
