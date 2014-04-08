@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe "IniParse" do
   describe '.open' do
-    before(:each) { File.stub!(:read).and_return('[section]') }
+    before(:each) { File.stub(:read).and_return('[section]') }
 
     it 'should return an IniParse::Document' do
       IniParse.open('/my/path.ini').should be_kind_of(IniParse::Document)

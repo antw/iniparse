@@ -58,7 +58,7 @@ describe "IniParse::Lines::Line module" do
           :comment => 'comment', :comment_sep => ';', :comment_offset => 0
         )
 
-        line.stub!(:line_contents).and_return('')
+        line.stub(:line_contents).and_return('')
         line.to_ini.should == '; comment'
       end
     end

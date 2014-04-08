@@ -68,7 +68,7 @@ describe "IniParse::Document" do
 
     describe 'when a path is given to save' do
       it "should update the document's +path+" do
-        File.stub!(:open).and_return(true)
+        File.stub(:open).and_return(true)
         doc = IniParse::Document.new('/a/path/to/a/file.ini')
         doc.save('/a/new/path.ini')
         doc.path.should == '/a/new/path.ini'
