@@ -77,9 +77,10 @@ module IniParse
       # Strips in inline comment from a line (or value), removes trailing
       # whitespace and sets the comment options as applicable.
       def strip_comment(line, opts)
-        if m = /^(^)(?:(;|\#)\s*(.*))$$/.match(line) ||
-           m = /^(.*?)(?:\s+(;|\#)\s*(.*))$/.match(line) # Comment lines.
-          opts[:comment] = m[3].rstrip
+        if m = /^(^)(?:(;|\#)(\s*)(.*))$$/.match(line) ||
+           m = /^(.*?)(?:\s+(;|\#)(\s*)(.*))$/.match(line) # Comment lines.
+          opts[:comment] = m[4].rstrip
+          opts[:comment_prefix] = m[3]
           opts[:comment_sep] = m[2]
           # Remove the line content (since an option value may contain a
           # semi-colon) _then_ get the index of the comment separator.
