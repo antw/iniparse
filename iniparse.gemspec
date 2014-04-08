@@ -12,14 +12,19 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = 'iniparse'
-  s.version           = '1.1.6'
-  s.date              = '2012-11-07'
+  s.version           = '1.2.0'
+  s.date              = '2014-04-08'
   s.rubyforge_project = 'iniparse'
 
   s.summary           = 'A pure Ruby library for parsing INI documents.'
   s.authors           = ['Anthony Williams']
   s.email             = 'hi@antw.me'
   s.homepage          = 'http://github.com/antw/iniparse'
+  s.licenses          = ['MIT']
+
+  s.description       = 'A pure Ruby library for parsing INI documents. ' \
+                        'Preserves the structure of the original document, ' \
+                        'including whitespace and comments'
 
   s.require_paths     = %w(lib)
 
@@ -27,7 +32,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files  = %w(History LICENSE README.rdoc)
 
   # Dependencies.
-  s.add_development_dependency('rspec', '>= 2.11.0')
+  s.add_development_dependency('rspec', '~> 2.14')
 
   # = MANIFEST =
   s.files = %w[
@@ -44,24 +49,6 @@ Gem::Specification.new do |s|
     lib/iniparse/line_collection.rb
     lib/iniparse/lines.rb
     lib/iniparse/parser.rb
-    spec/document_spec.rb
-    spec/fixture_spec.rb
-    spec/fixtures/openttd.ini
-    spec/fixtures/race07.ini
-    spec/fixtures/smb.ini
-    spec/generator/method_missing_spec.rb
-    spec/generator/with_section_blocks_spec.rb
-    spec/generator/without_section_blocks_spec.rb
-    spec/iniparse_spec.rb
-    spec/line_collection_spec.rb
-    spec/lines_spec.rb
-    spec/parser/document_parsing_spec.rb
-    spec/parser/line_parsing_spec.rb
-    spec/spec_fixtures.rb
-    spec/spec_helper.rb
-    spec/spec_helper_spec.rb
   ]
   # = MANIFEST =
-
-  s.test_files = s.files.select { |path| path =~ /^spec\/.*\.rb/ }
 end
