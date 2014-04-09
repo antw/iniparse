@@ -153,6 +153,15 @@ module IniParse
         end
       end
 
+      # Deletes the option identified by +key+.
+      #
+      # Returns the section.
+      #
+      def delete(*args)
+        @lines.delete(*args)
+        self
+      end
+
       # Like [], except instead of returning just the option value, it returns
       # the matching line instance.
       #

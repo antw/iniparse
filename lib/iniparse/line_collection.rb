@@ -66,6 +66,8 @@ module IniParse
 
     # Removes the value identified by +key+.
     def delete(key)
+      key = key.key if key.respond_to?(:key)
+
       unless (idx = @indicies[key]).nil?
         @indicies.delete(key)
         @indicies.each { |k,v| @indicies[k] = v -= 1 if v > idx }

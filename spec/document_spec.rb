@@ -52,6 +52,41 @@ describe "IniParse::Document" do
     end
   end
 
+  describe '#delete' do
+    let(:document) do
+      IniParse::Generator.gen do |doc|
+        doc.section('first') do |section|
+          section.alpha   = 'bravo'
+          section.charlie = 'delta'
+        end
+
+        doc.section('second') do |section|
+          section.echo = 'foxtrot'
+          section.golf = 'hotel'
+        end
+      end
+    end
+
+    it 'removes the section given a key' do
+      lambda { document.delete('first') }.
+        should change { document['first'] }.to(nil)
+    end
+
+    it 'removes the section given a Section' do
+      lambda { document.delete(document['first']) }.
+        should change { document['first'] }.to(nil)
+    end
+
+    it 'removes the lines' do
+      lambda { document.delete('first') }.
+        should change { document.to_ini.match(/alpha/) }.to(nil)
+    end
+
+    it 'returns the document' do
+      document.delete('first').should eql(document)
+    end
+  end
+
   describe '#save' do
     describe 'when no path is given to save' do
       it 'should save the INI document if a path was given when initialized' do

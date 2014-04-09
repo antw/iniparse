@@ -32,6 +32,15 @@ module IniParse
       @lines[key.to_s]
     end
 
+    # Deletes the section whose name matches the given +key+.
+    #
+    # Returns the document.
+    #
+    def delete(*args)
+      @lines.delete(*args)
+      self
+    end
+
     # Returns this document as a string suitable for saving to a file.
     def to_ini
       @lines.to_a.map { |line| line.to_ini }.join($/)

@@ -237,6 +237,34 @@ describe 'IniParse::Lines::Section' do
     end
   end
 
+  describe '#delete' do
+    let(:opt_one) { IniParse::Lines::Option.new('a', 'b') }
+    let(:opt_two) { IniParse::Lines::Option.new('c', 'd') }
+
+    before(:each) do
+      @section.lines << opt_one
+      @section.lines << opt_two
+    end
+
+    it 'removes the option given a key' do
+      lambda { @section.delete('a') }.
+        should change { @section['a'] }.to(nil)
+    end
+
+    it 'removes the option given an Option' do
+      lambda { @section.delete(opt_one) }.
+        should change { @section['a'] }.to(nil)
+    end
+
+    it 'should not remove non-matching lines' do
+      lambda { @section.delete('a') }.should_not change { @section['c'] }
+    end
+
+    it 'returns the section' do
+      @section.delete('a').should eql(@section)
+    end
+  end
+
   describe '#to_ini' do
     it 'should include the section key' do
       IniParse::Lines::Section.new('a section').to_ini.should == '[a section]'

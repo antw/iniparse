@@ -88,6 +88,14 @@ Options which appear before the first section will be added to a section called
     document['a_section']['an_option']
       # => "a new value"
 
+Delete entire sections by calling `#delete` with the section name...
+
+    document.delete('a_section')
+
+... or a single option with `#delete` on the section object:
+
+    document['a_section'].delete('an_option')
+
 === Creating a new INI file
 
 See IniParse::Generator.
