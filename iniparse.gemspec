@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = 'iniparse'
-  s.version           = '1.2.0'
-  s.date              = '2014-04-08'
+  s.version           = '1.3.0'
+  s.date              = '2014-04-09'
   s.rubyforge_project = 'iniparse'
 
   s.summary           = 'A pure Ruby library for parsing INI documents.'
