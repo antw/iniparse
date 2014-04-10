@@ -43,7 +43,10 @@ module IniParse
 
     # Returns this document as a string suitable for saving to a file.
     def to_ini
-      @lines.to_a.map { |line| line.to_ini }.join($/)
+      string = @lines.to_a.map { |line| line.to_ini }.join($/)
+      string = "#{ string }\n" unless string[-1] == "\n"
+
+      string
     end
 
     # Returns true if a section with the given +key+ exists in this document.

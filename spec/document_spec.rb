@@ -87,6 +87,35 @@ describe "IniParse::Document" do
     end
   end
 
+  describe '#to_ini' do
+    let(:document) do
+      IniParse.parse(<<-EOF.gsub(/^\s+/, ''))
+        [one]
+        alpha = bravo
+        [two]
+        chalie = delta
+      EOF
+    end
+
+    context 'when the document has a trailing Blank line' do
+      it 'outputs the newline to the output string' do
+        expect(document.to_ini).to match(/\n\Z/)
+      end
+
+      it 'does not add a second newline to the output string' do
+        expect(document.to_ini).to_not match(/\n\n\Z/)
+      end
+    end # when the document has a trailing Blank line
+
+    context 'when the document has no trailing Blank line' do
+      before { document.delete('two') }
+
+      it 'adds a newline to the output string' do
+        expect(document.to_ini).to match(/\n\Z/)
+      end
+    end # when the document has no trailing Blank line
+  end # to_ini
+
   describe '#save' do
     describe 'when no path is given to save' do
       it 'should save the INI document if a path was given when initialized' do
