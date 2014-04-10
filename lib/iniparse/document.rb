@@ -49,6 +49,8 @@ module IniParse
       string
     end
 
+    alias_method :to_s, :to_ini
+
     # Returns true if a section with the given +key+ exists in this document.
     def has_section?(key)
       @lines.has_key?(key.to_s)
