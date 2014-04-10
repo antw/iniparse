@@ -51,6 +51,12 @@ module IniParse
 
     alias_method :to_s, :to_ini
 
+    # A human-readable version of the document, for debugging.
+    def inspect
+      sections = @lines.select { |l| l.is_a?(IniParse::Lines::Section) }
+      "#<IniParse::Document {#{ sections.map(&:key).join(', ') }}>"
+    end
+
     # Returns true if a section with the given +key+ exists in this document.
     def has_section?(key)
       @lines.has_key?(key.to_s)
