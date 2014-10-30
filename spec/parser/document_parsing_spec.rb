@@ -81,4 +81,27 @@ describe 'Parsing a document' do
       @doc['another_section = a name']['another'].should == 'thing'
     end
   end
+
+  describe 'when a document contains a section multiple times' do
+    before(:all) do
+      @doc = IniParse::Parser.new(fixture(:duplicate_section)).parse
+    end
+
+    it 'should only add the section once' do
+      # "first_section" and "second_section".
+      @doc.lines.to_a.length.should == 2
+    end
+
+    it 'should retain values from the first time' do
+      @doc['first_section']['key'].should == 'value'
+    end
+
+    it 'should add new keys' do
+      @doc['first_section']['third'].should == 'fourth'
+    end
+
+    it 'should merge in duplicate keys' do
+      @doc['first_section']['another'].should == %w( thing again )
+    end
+  end
 end

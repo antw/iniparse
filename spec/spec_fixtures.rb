@@ -61,3 +61,16 @@ IniParse::Test::Fixtures[:comment_line] = <<-FIX.gsub(/^  /, '')
   ; with more lines ;
   key = value
 FIX
+
+IniParse::Test::Fixtures[:duplicate_section] = <<-FIX.gsub(/^  /, '')
+  [first_section]
+  key = value
+  another = thing
+
+  [second_section]
+  okay = yes
+
+  [first_section]
+  third = fourth
+  another = again
+FIX
