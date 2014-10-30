@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
   s.require_paths     = %w(lib)
 
   s.rdoc_options      = ['--charset=UTF-8']
-  s.extra_rdoc_files  = %w(History LICENSE README.rdoc)
+  s.extra_rdoc_files  = %w(LICENSE README.rdoc)
 
   # Dependencies.
   s.add_development_dependency('rspec', '~> 2.14')
@@ -37,7 +37,6 @@ Gem::Specification.new do |s|
   # = MANIFEST =
   s.files = %w[
     Gemfile
-    History
     LICENSE
     README.rdoc
     Rakefile
