@@ -4,14 +4,6 @@ IniParse is a pure Ruby library for parsing
 INI[http://en.wikipedia.org/wiki/INI_file] configuration and data
 files.
 
-This rubygem is in ongoing development and - specs aside - hasn't yet been
-properly tested in a production environment. If you think you've found a bug,
-or you feed it an INI file which doesn't work as you'd expected, please mail
-me at +anthony at ninecraft dot com+, ideally with a copy of the INI file in
-question.
-
-IniParse tests pass on Ruby 1.8.6p399, 1.8.7p249, and 1.9.1p378, JRuby 1.4.0 and Rubinius 1.0.0 RC2.
-
 === Main features
 
 * <b>Support for duplicate options.</b> While not common, some INI files
