@@ -340,6 +340,18 @@ describe 'Iniparse::Lines::Option' do
       parse('key =    ').should be_option_tuple('key', nil)
     end
 
+    it 'should not typecast "true" if true is part of a word' do
+      parse('key = TestTrueTest').should be_option_tuple('key', 'TestTrueTest')
+      parse('key = TrueTest').should be_option_tuple('key', 'TrueTest')
+      parse('key = TestTrue').should be_option_tuple('key', 'TestTrue')
+    end
+
+    it 'should not typecast "false" if false is part of a word' do
+      parse('key = TestFalseTest').should be_option_tuple('key', 'TestFalseTest')
+      parse('key = FalseTest').should be_option_tuple('key', 'FalseTest')
+      parse('key = TestFalse').should be_option_tuple('key', 'TestFalse')
+    end
+
     it 'should typecast "true" to TrueClass' do
       parse('key = true').should be_option_tuple('key', true)
       parse('key = TRUE').should be_option_tuple('key', true)

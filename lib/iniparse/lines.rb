@@ -261,8 +261,8 @@ module IniParse
           when /^\s*$/                                        then nil
           when /^-?(?:\d|[1-9]\d+)$/                          then Integer(value)
           when /^-?(?:\d|[1-9]\d+)(?:\.\d+)?(?:e[+-]?\d+)?$/i then Float(value)
-          when /true/i                                        then true
-          when /false/i                                       then false
+          when /^true$/i                                      then true
+          when /^false$/i                                     then false
           else                                                     value
         end
       end
