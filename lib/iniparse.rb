@@ -7,7 +7,7 @@ require File.join(dir, 'lines')
 require File.join(dir, 'parser')
 
 module IniParse
-  VERSION = '1.3.2'
+  VERSION = '1.3.3'
 
   # A base class for IniParse errors.
   class IniParseError < StandardError; end
