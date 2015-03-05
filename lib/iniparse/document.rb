@@ -51,6 +51,24 @@ module IniParse
 
     alias_method :to_s, :to_ini
 
+    # Returns a has representation of the INI with multi-line options
+    # as an array
+    def to_hash
+      result = {}
+      @lines.entries.each do |section|
+        result[section.key] ||= {}
+        section.entries.each do |option|
+          opts = Array(option)
+          val = opts.map { |o| o.respond_to?(:value) ? o.value : o }
+          val = val.size > 1 ? val : val.first
+          result[section.key][opts.first.key] = val
+        end
+      end
+      result
+    end
+
+    alias_method :to_h, :to_hash
+
     # A human-readable version of the document, for debugging.
     def inspect
       sections = @lines.select { |l| l.is_a?(IniParse::Lines::Section) }
