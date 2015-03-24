@@ -272,7 +272,12 @@ module IniParse
       #######
 
       def line_contents
-        '%s = %s' % [key, value]
+        contents = ''
+        [*value].each do |v|
+          contents << "#{key} = #{v}"
+          contents << "\n" if [*value].count > 1
+        end
+        contents
       end
     end
 
