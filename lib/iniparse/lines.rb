@@ -145,7 +145,7 @@ module IniParse
         opts = {}
         if line.kind_of?(Array)
           opts = line.first.options
-        else
+        elsif line.respond_to? :options
           opts = line.options
         end
         @lines[key.to_s] = IniParse::Lines::Option.new(key.to_s, value, opts)
@@ -290,7 +290,11 @@ module IniParse
       # returns an array to support multiple lines or a single one at once
       # because of options key duplication
       def line_contents
-        [*value].map { |v, i| "#{key} = #{v}" }
+        if value.kind_of?(Array)
+          value.map { |v, i| "#{key} = #{v}" }
+        else
+          "#{key} = #{value}"
+        end
       end
     end
 
