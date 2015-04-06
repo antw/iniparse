@@ -21,16 +21,14 @@ module IniParse
       # Returns this line as a string as it would be represented in an INI
       # document.
       def to_ini
-        ini = line_contents
-        ini = @indent + ini if @indent
-
-        if has_comment?
-          ini += ' ' if ini =~ /\S/ # not blank
-          ini  = ini.ljust(@comment_offset)
-          ini += comment
-        end
-
-        ini
+        [*line_contents].map { |ini|
+            if has_comment?
+              ini += ' ' if ini =~ /\S/ # not blank
+              ini  = ini.ljust(@comment_offset)
+              ini += comment
+            end
+            @indent + ini
+          }.join "\n"
       end
 
       # Returns the contents for this line.
@@ -47,6 +45,17 @@ module IniParse
       # Returns whether this is a line which has no data.
       def blank?
         false
+      end
+
+      # Returns the options used to create the line
+      def options
+        {
+          comment: @comment,
+          comment_sep: @comment_sep,
+          comment_prefix: @comment_prefix,
+          comment_offset: @comment_offset,
+          indent: @indent
+        }
       end
     end
 
@@ -93,13 +102,13 @@ module IniParse
         coll = lines.to_a
 
         if coll.any?
-          super + $/ + coll.to_a.map do |line|
+          [*super,coll.to_a.map do |line|
             if line.kind_of?(Array)
               line.map { |dup_line| dup_line.to_ini }.join($/)
             else
               line.to_ini
             end
-          end.join($/)
+          end].join($/)
         else
           super
         end
@@ -132,7 +141,14 @@ module IniParse
       # new option to be considered a duplicate, use +add_option+ instead.
       #
       def []=(key, value)
-        @lines[key.to_s] = IniParse::Lines::Option.new(key.to_s, value)
+        line = @lines[key.to_s]
+        opts = {}
+        if line.kind_of?(Array)
+          opts = line.first.options
+        elsif line.respond_to? :options
+          opts = line.options
+        end
+        @lines[key.to_s] = IniParse::Lines::Option.new(key.to_s, value, opts)
       end
 
       # Returns the value of an option identified by +key+.
@@ -271,8 +287,14 @@ module IniParse
       private
       #######
 
+      # returns an array to support multiple lines or a single one at once
+      # because of options key duplication
       def line_contents
-        '%s = %s' % [key, value]
+        if value.kind_of?(Array)
+          value.map { |v, i| "#{key} = #{v}" }
+        else
+          "#{key} = #{value}"
+        end
       end
     end
 
