@@ -36,7 +36,7 @@ module IniParse
   # IniParse::Document
   #
   def parse(source)
-    IniParse::Parser.new(source.gsub("\\\n", '')).parse
+    IniParse::Parser.new(source.gsub(/(?<!\\)\\\n/, '')).parse
   end
 
   # Opens the file at +path+, reads and parses it's contents.
@@ -48,7 +48,7 @@ module IniParse
   # IniParse::Document
   #
   def open(path)
-    document = IniParse::Parser.new(File.read(path)).parse
+    document = parse(File.read(path))
     document.path = path
     document
   end
