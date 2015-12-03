@@ -32,6 +32,14 @@ module IniParse
       @lines[key.to_s]
     end
 
+    # Returns the section identified by +key+.
+    #
+    # If there is no Section with the given key it will be created.
+    #
+    def section(key)
+      @lines[key.to_s] ||= Lines::Section.new(key.to_s)
+    end
+
     # Deletes the section whose name matches the given +key+.
     #
     # Returns the document.

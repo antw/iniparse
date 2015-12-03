@@ -41,10 +41,12 @@ describe "IniParse::Document" do
     before(:all) do
       @doc = IniParse::Document.new
       @doc.lines << IniParse::Lines::Section.new('first section')
+      @doc.section('another section')
     end
 
     it 'should return true if a section with the given key exists' do
       @doc.should have_section('first section')
+      @doc.should have_section('another section')
     end
 
     it 'should return true if no section with the given key exists' do
