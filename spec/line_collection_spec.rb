@@ -4,7 +4,7 @@ require 'spec_helper'
 # Shared specs for all Collection types...
 # ----------------------------------------------------------------------------
 
-share_examples_for "LineCollection" do
+shared_examples_for "LineCollection" do
   before(:each) do
     @collection << (@c1 = IniParse::Lines::Comment.new)
     @collection <<  @i1
@@ -16,7 +16,7 @@ share_examples_for "LineCollection" do
 
   describe '#each' do
     it 'should remove blanks and comments by default' do
-      @collection.each { |l| l.should be_kind_of(@i1.class) }
+      @collection.each { |l| expect(l).to be_kind_of(@i1.class) }
     end
 
     it 'should not remove blanks and comments if true is given' do
@@ -27,121 +27,121 @@ share_examples_for "LineCollection" do
         arr << line
       end
 
-      arr.should == [@c1, @i1, @i2, @b1, @i3, @b2]
+      expect(arr).to eq([@c1, @i1, @i2, @b1, @i3, @b2])
     end
   end
 
   describe '#[]' do
     it 'should fetch the correct value' do
-      @collection['first'].should  == @i1
-      @collection['second'].should == @i2
-      @collection['third'].should  == @i3
+      expect(@collection['first']).to  eq(@i1)
+      expect(@collection['second']).to eq(@i2)
+      expect(@collection['third']).to  eq(@i3)
     end
 
     it 'should return nil if the given key does not exist' do
-      @collection['does not exist'].should be_nil
+      expect(@collection['does not exist']).to be_nil
     end
   end
 
   describe '#[]=' do
     it 'should successfully add a new key' do
       @collection['fourth'] = @new
-      @collection['fourth'].should == @new
+      expect(@collection['fourth']).to eq(@new)
     end
 
     it 'should successfully update an existing key' do
       @collection['second'] = @new
-      @collection['second'].should == @new
+      expect(@collection['second']).to eq(@new)
 
       # Make sure the old data is gone.
-      @collection.detect { |s| s.key == 'second' }.should be_nil
+      expect(@collection.detect { |s| s.key == 'second' }).to be_nil
     end
 
     it 'should typecast given keys to a string' do
       @collection[:a_symbol] = @new
-      @collection['a_symbol'].should == @new
+      expect(@collection['a_symbol']).to eq(@new)
     end
   end
 
   describe '#<<' do
     it 'should set the key correctly if given a new item' do
-      @collection.should_not have_key(@new.key)
+      expect(@collection).not_to have_key(@new.key)
       @collection << @new
-      @collection.should have_key(@new.key)
+      expect(@collection).to have_key(@new.key)
     end
 
     it 'should append Blank lines' do
       @collection << IniParse::Lines::Blank.new
-      @collection.instance_variable_get(:@lines).last.should \
+      expect(@collection.instance_variable_get(:@lines).last).to \
         be_kind_of(IniParse::Lines::Blank)
     end
 
     it 'should append Comment lines' do
       @collection << IniParse::Lines::Comment.new
-      @collection.instance_variable_get(:@lines).last.should \
+      expect(@collection.instance_variable_get(:@lines).last).to \
         be_kind_of(IniParse::Lines::Comment)
     end
 
     it 'should return self' do
-      (@collection << @new).should == @collection
+      expect(@collection << @new).to eq(@collection)
     end
   end
 
   describe '#delete' do
     it 'should remove the given value and adjust the indicies' do
-      @collection['second'].should_not be_nil
+      expect(@collection['second']).not_to be_nil
       @collection.delete('second')
-      @collection['second'].should be_nil
-      @collection['first'].should == @i1
-      @collection['third'].should == @i3
+      expect(@collection['second']).to be_nil
+      expect(@collection['first']).to eq(@i1)
+      expect(@collection['third']).to eq(@i3)
     end
 
     it "should do nothing if the supplied key does not exist" do
       @collection.delete('does not exist')
-      @collection['first'].should == @i1
-      @collection['third'].should == @i3
+      expect(@collection['first']).to eq(@i1)
+      expect(@collection['third']).to eq(@i3)
     end
   end
 
   describe '#to_a' do
     it 'should return an array' do
-      @collection.to_a.should be_kind_of(Array)
+      expect(@collection.to_a).to be_kind_of(Array)
     end
 
     it 'should include all lines' do
-      @collection.to_a.should == [@c1, @i1, @i2, @b1, @i3, @b2]
+      expect(@collection.to_a).to eq([@c1, @i1, @i2, @b1, @i3, @b2])
     end
 
     it 'should include references to the same line objects as the collection' do
       @collection << @new
-      @collection.to_a.last.object_id.should == @new.object_id
+      expect(@collection.to_a.last.object_id).to eq(@new.object_id)
     end
   end
 
   describe '#to_hash' do
     it 'should return a hash' do
-      @collection.to_hash.should be_kind_of(Hash)
+      expect(@collection.to_hash).to be_kind_of(Hash)
     end
 
     it 'should have the correct keys' do
       hash = @collection.to_hash
-      hash.keys.length.should == 3
-      hash.should have_key('first')
-      hash.should have_key('second')
-      hash.should have_key('third')
+      expect(hash.keys.length).to eq(3)
+      expect(hash).to have_key('first')
+      expect(hash).to have_key('second')
+      expect(hash).to have_key('third')
     end
 
     it 'should have the correct values' do
       hash = @collection.to_hash
-      hash['first'].should  == @i1
-      hash['second'].should == @i2
-      hash['third'].should  == @i3
+      expect(hash['first']).to  eq(@i1)
+      expect(hash['second']).to eq(@i2)
+      expect(hash['third']).to  eq(@i3)
     end
   end
 
   describe '#keys' do
     it 'should return an array of strings' do
-      @collection.keys.should == ['first', 'second', 'third']
+      expect(@collection.keys).to eq(['first', 'second', 'third'])
     end
   end
 end
@@ -163,7 +163,7 @@ describe 'IniParse::OptionCollection' do
 
   describe '#<<' do
     it 'should raise a LineNotAllowed exception if a Section is pushed' do
-      lambda { @collection << IniParse::Lines::Section.new('s') }.should \
+      expect { @collection << IniParse::Lines::Section.new('s') }.to \
         raise_error(IniParse::LineNotAllowed)
     end
 
@@ -174,7 +174,7 @@ describe 'IniParse::OptionCollection' do
       @collection << option_one
       @collection << option_two
 
-      @collection['k'].should == [option_one, option_two]
+      expect(@collection['k']).to eq([option_one, option_two])
     end
   end
 
@@ -182,7 +182,7 @@ describe 'IniParse::OptionCollection' do
     it 'should handle duplicates' do
       @collection << @i1 << @i2 << @i3
       @collection << IniParse::Lines::Option.new('first', 'v5')
-      @collection.keys.should == ['first', 'second', 'third']
+      expect(@collection.keys).to eq(['first', 'second', 'third'])
     end
   end
 end
@@ -202,7 +202,7 @@ describe 'IniParse::SectionCollection' do
     it 'should add merge Section with the other, if it is a duplicate' do
       new_section = IniParse::Lines::Section.new('first')
       @collection << @i1
-      @i1.should_receive(:merge!).with(new_section).once
+      expect(@i1).to receive(:merge!).with(new_section).once
       @collection << new_section
     end
   end

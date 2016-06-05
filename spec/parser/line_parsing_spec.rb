@@ -4,12 +4,12 @@ require 'spec_helper'
 
 describe 'Parsing a line' do
   it 'should strip leading whitespace and set the :indent option' do
-    IniParse::Parser.parse_line('  [section]').should \
+    expect(IniParse::Parser.parse_line('  [section]')).to \
       be_section_tuple(:any, {:indent => '  '})
   end
 
   it 'should raise an error if the line could not be matched' do
-    lambda { IniParse::Parser.parse_line('invalid line') }.should \
+    expect { IniParse::Parser.parse_line('invalid line') }.to \
       raise_error(IniParse::ParseError)
   end
 
@@ -17,7 +17,7 @@ describe 'Parsing a line' do
     begin
       # Remove last type.
       type = IniParse::Parser.parse_types.pop
-      type.should_not_receive(:parse)
+      expect(type).not_to receive(:parse)
       IniParse::Parser.parse_line('[section]')
     ensure
       IniParse::Parser.parse_types << type
@@ -36,20 +36,20 @@ describe 'Parsing a line' do
     end
 
     it 'should return an option tuple' do
-      @tuple.should be_option_tuple('k', 'v')
+      expect(@tuple).to be_option_tuple('k', 'v')
     end
 
     it 'should set no indent, comment, offset or separator' do
-      @tuple.last[:indent].should be_nil
-      @tuple.last[:comment].should be_nil
-      @tuple.last[:comment_offset].should be_nil
-      @tuple.last[:comment_sep].should be_nil
+      expect(@tuple.last[:indent]).to be_nil
+      expect(@tuple.last[:comment]).to be_nil
+      expect(@tuple.last[:comment_offset]).to be_nil
+      expect(@tuple.last[:comment_sep]).to be_nil
     end
   end
 
   describe 'with "k = a value with spaces"' do
     it 'should return an option tuple' do
-      IniParse::Parser.parse_line('k = a value with spaces').should \
+      expect(IniParse::Parser.parse_line('k = a value with spaces')).to \
         be_option_tuple('k', 'a value with spaces')
     end
   end
@@ -60,19 +60,19 @@ describe 'Parsing a line' do
     end
 
     it 'should return an option tuple' do
-      @tuple.should be_option_tuple('k', 'v')
+      expect(@tuple).to be_option_tuple('k', 'v')
     end
 
     it 'should set the comment to "a comment"' do
-      @tuple.should be_option_tuple(:any, :any, :comment => 'a comment')
+      expect(@tuple).to be_option_tuple(:any, :any, :comment => 'a comment')
     end
 
     it 'should set the comment separator to ";"' do
-      @tuple.should be_option_tuple(:any, :any, :comment_sep => ';')
+      expect(@tuple).to be_option_tuple(:any, :any, :comment_sep => ';')
     end
 
     it 'should set the comment offset to 6' do
-      @tuple.should be_option_tuple(:any, :any, :comment_offset => 6)
+      expect(@tuple).to be_option_tuple(:any, :any, :comment_offset => 6)
     end
   end
 
@@ -82,13 +82,13 @@ describe 'Parsing a line' do
     end
 
     it 'should return an option tuple with the correct value' do
-      @tuple.should be_option_tuple(:any, 'v;w;x y;z')
+      expect(@tuple).to be_option_tuple(:any, 'v;w;x y;z')
     end
 
     it 'should not set a comment' do
-      @tuple.last[:comment].should be_nil
-      @tuple.last[:comment_offset].should be_nil
-      @tuple.last[:comment_sep].should be_nil
+      expect(@tuple.last[:comment]).to be_nil
+      expect(@tuple.last[:comment_offset]).to be_nil
+      expect(@tuple.last[:comment_sep]).to be_nil
     end
   end
 
@@ -98,58 +98,58 @@ describe 'Parsing a line' do
     end
 
     it 'should return an option tuple with the correct value' do
-      @tuple.should be_option_tuple(:any, 'v;w')
+      expect(@tuple).to be_option_tuple(:any, 'v;w')
     end
 
     it 'should set the comment to "a comment"' do
-      @tuple.should be_option_tuple(:any, :any, :comment => 'a comment')
+      expect(@tuple).to be_option_tuple(:any, :any, :comment => 'a comment')
     end
 
     it 'should set the comment separator to ";"' do
-      @tuple.should be_option_tuple(:any, :any, :comment_sep => ';')
+      expect(@tuple).to be_option_tuple(:any, :any, :comment_sep => ';')
     end
 
     it 'should set the comment offset to 8' do
-      @tuple.should be_option_tuple(:any, :any, :comment_offset => 8)
+      expect(@tuple).to be_option_tuple(:any, :any, :comment_offset => 8)
     end
   end
 
   describe 'with "key=value"' do
     it 'should return an option tuple with the correct key and value' do
-      IniParse::Parser.parse_line('key=value').should \
+      expect(IniParse::Parser.parse_line('key=value')).to \
         be_option_tuple('key', 'value')
     end
   end
 
   describe 'with "key= value"' do
     it 'should return an option tuple with the correct key and value' do
-      IniParse::Parser.parse_line('key= value').should \
+      expect(IniParse::Parser.parse_line('key= value')).to \
         be_option_tuple('key', 'value')
     end
   end
 
   describe 'with "key =value"' do
     it 'should return an option tuple with the correct key and value' do
-      IniParse::Parser.parse_line('key =value').should \
+      expect(IniParse::Parser.parse_line('key =value')).to \
         be_option_tuple('key', 'value')
     end
   end
 
   describe 'with "key   =   value"' do
     it 'should return an option tuple with the correct key and value' do
-      IniParse::Parser.parse_line('key   =   value').should \
+      expect(IniParse::Parser.parse_line('key   =   value')).to \
         be_option_tuple('key', 'value')
     end
   end
 
   describe 'with "key ="' do
     it 'should return an option tuple with the correct key' do
-      IniParse::Parser.parse_line('key =').should \
+      expect(IniParse::Parser.parse_line('key =')).to \
         be_option_tuple('key')
     end
 
     it 'should set the option value to nil' do
-      IniParse::Parser.parse_line('key =').should \
+      expect(IniParse::Parser.parse_line('key =')).to \
         be_option_tuple(:any, nil)
     end
   end
@@ -157,49 +157,49 @@ describe 'Parsing a line' do
 
   describe 'with "key = EEjDDJJjDJDJD233232=="' do
     it 'should include the "equals" in the option value' do
-      IniParse::Parser.parse_line('key = EEjDDJJjDJDJD233232==').should \
+      expect(IniParse::Parser.parse_line('key = EEjDDJJjDJDJD233232==')).to \
         be_option_tuple('key', 'EEjDDJJjDJDJD233232==')
     end
   end
 
   describe 'with "key = ==EEjDDJJjDJDJD233232"' do
     it 'should include the "equals" in the option value' do
-      IniParse::Parser.parse_line('key = ==EEjDDJJjDJDJD233232').should \
+      expect(IniParse::Parser.parse_line('key = ==EEjDDJJjDJDJD233232')).to \
         be_option_tuple('key', '==EEjDDJJjDJDJD233232')
     end
   end
 
   describe 'with "key.two = value"' do
     it 'should return an option tuple with the correct key' do
-      IniParse::Parser.parse_line('key.two = value').should \
+      expect(IniParse::Parser.parse_line('key.two = value')).to \
         be_option_tuple('key.two')
     end
   end
 
   describe 'with "key/with/slashes = value"' do
     it 'should return an option tuple with the correct key' do
-      IniParse::Parser.parse_line('key/with/slashes = value').should \
+      expect(IniParse::Parser.parse_line('key/with/slashes = value')).to \
         be_option_tuple('key/with/slashes', 'value')
     end
   end
 
   describe 'with "key_with_underscores = value"' do
     it 'should return an option tuple with the correct key' do
-      IniParse::Parser.parse_line('key_with_underscores = value').should \
+      expect(IniParse::Parser.parse_line('key_with_underscores = value')).to \
         be_option_tuple('key_with_underscores', 'value')
     end
   end
 
   describe 'with "key-with-dashes = value"' do
     it 'should return an option tuple with the correct key' do
-      IniParse::Parser.parse_line('key-with-dashes = value').should \
+      expect(IniParse::Parser.parse_line('key-with-dashes = value')).to \
         be_option_tuple('key-with-dashes', 'value')
     end
   end
 
   describe 'with "key with spaces = value"' do
     it 'should return an option tuple with the correct key' do
-      IniParse::Parser.parse_line('key with spaces = value').should \
+      expect(IniParse::Parser.parse_line('key with spaces = value')).to \
         be_option_tuple('key with spaces', 'value')
     end
   end
@@ -216,27 +216,27 @@ describe 'Parsing a line' do
     end
 
     it 'should return a section tuple' do
-      @tuple.should be_section_tuple('section')
+      expect(@tuple).to be_section_tuple('section')
     end
 
     it 'should set no indent, comment, offset or separator' do
-      @tuple.last[:indent].should be_nil
-      @tuple.last[:comment].should be_nil
-      @tuple.last[:comment_offset].should be_nil
-      @tuple.last[:comment_sep].should be_nil
+      expect(@tuple.last[:indent]).to be_nil
+      expect(@tuple.last[:comment]).to be_nil
+      expect(@tuple.last[:comment_offset]).to be_nil
+      expect(@tuple.last[:comment_sep]).to be_nil
     end
   end
 
   describe 'with "[section with whitespace]"' do
     it 'should return a section tuple with the correct key' do
-      IniParse::Parser.parse_line('[section with whitespace]').should \
+      expect(IniParse::Parser.parse_line('[section with whitespace]')).to \
         be_section_tuple('section with whitespace')
     end
   end
 
   describe 'with "[  section with surounding whitespace  ]"' do
     it 'should return a section tuple with the correct key' do
-      IniParse::Parser.parse_line('[  section with surounding whitespace  ]').should \
+      expect(IniParse::Parser.parse_line('[  section with surounding whitespace  ]')).to \
         be_section_tuple('  section with surounding whitespace  ')
     end
   end
@@ -247,19 +247,19 @@ describe 'Parsing a line' do
     end
 
     it 'should return a section tuple' do
-      @tuple.should be_section_tuple('section')
+      expect(@tuple).to be_section_tuple('section')
     end
 
     it 'should set the comment to "a comment"' do
-      @tuple.should be_section_tuple(:any, :comment => 'a comment')
+      expect(@tuple).to be_section_tuple(:any, :comment => 'a comment')
     end
 
     it 'should set the comment separator to ";"' do
-      @tuple.should be_section_tuple(:any, :comment_sep => ';')
+      expect(@tuple).to be_section_tuple(:any, :comment_sep => ';')
     end
 
     it 'should set the comment offset to 10' do
-      @tuple.should be_section_tuple(:any, :comment_offset => 10)
+      expect(@tuple).to be_section_tuple(:any, :comment_offset => 10)
     end
   end
 
@@ -269,14 +269,14 @@ describe 'Parsing a line' do
     end
 
     it 'should return a section tuple with the correct key' do
-      @tuple.should be_section_tuple('section;with#comment;chars')
+      expect(@tuple).to be_section_tuple('section;with#comment;chars')
     end
 
     it 'should not set a comment' do
-      @tuple.last[:indent].should be_nil
-      @tuple.last[:comment].should be_nil
-      @tuple.last[:comment_offset].should be_nil
-      @tuple.last[:comment_sep].should be_nil
+      expect(@tuple.last[:indent]).to be_nil
+      expect(@tuple.last[:comment]).to be_nil
+      expect(@tuple.last[:comment_offset]).to be_nil
+      expect(@tuple.last[:comment_sep]).to be_nil
     end
   end
 
@@ -286,19 +286,19 @@ describe 'Parsing a line' do
     end
 
     it 'should return a section tuple with the correct key' do
-      @tuple.should be_section_tuple('section;with#comment;chars')
+      expect(@tuple).to be_section_tuple('section;with#comment;chars')
     end
 
     it 'should set the comment to "a comment"' do
-      @tuple.should be_section_tuple(:any, :comment => 'a comment')
+      expect(@tuple).to be_section_tuple(:any, :comment => 'a comment')
     end
 
     it 'should set the comment separator to ";"' do
-      @tuple.should be_section_tuple(:any, :comment_sep => ';')
+      expect(@tuple).to be_section_tuple(:any, :comment_sep => ';')
     end
 
     it 'should set the comment offset to 29' do
-      @tuple.should be_section_tuple(:any, :comment_offset => 29)
+      expect(@tuple).to be_section_tuple(:any, :comment_offset => 29)
     end
   end
 
@@ -314,15 +314,15 @@ describe 'Parsing a line' do
     end
 
     it 'should return a comment tuple with the correct comment' do
-      @tuple.should be_comment_tuple('a comment')
+      expect(@tuple).to be_comment_tuple('a comment')
     end
 
     it 'should set the comment separator to ";"' do
-      @tuple.should be_comment_tuple(:any, :comment_sep => ';')
+      expect(@tuple).to be_comment_tuple(:any, :comment_sep => ';')
     end
 
     it 'should set the comment offset to 0' do
-      @tuple.should be_comment_tuple(:any, :comment_offset => 0)
+      expect(@tuple).to be_comment_tuple(:any, :comment_offset => 0)
     end
   end
 
@@ -332,15 +332,15 @@ describe 'Parsing a line' do
     end
 
     it 'should return a comment tuple with the correct comment' do
-      @tuple.should be_comment_tuple('a comment')
+      expect(@tuple).to be_comment_tuple('a comment')
     end
 
     it 'should set the comment separator to ";"' do
-      @tuple.should be_comment_tuple(:any, :comment_sep => ';')
+      expect(@tuple).to be_comment_tuple(:any, :comment_sep => ';')
     end
 
     it 'should set the comment offset to 1' do
-      @tuple.should be_comment_tuple(:any, :comment_offset => 1)
+      expect(@tuple).to be_comment_tuple(:any, :comment_offset => 1)
     end
   end
 
@@ -350,15 +350,15 @@ describe 'Parsing a line' do
     end
 
     it 'should return a comment tuple with an empty value' do
-      @tuple.should be_comment_tuple('')
+      expect(@tuple).to be_comment_tuple('')
     end
 
     it 'should set the comment separator to ";"' do
-      @tuple.should be_comment_tuple(:any, :comment_sep => ';')
+      expect(@tuple).to be_comment_tuple(:any, :comment_sep => ';')
     end
 
     it 'should set the comment offset to 0' do
-      @tuple.should be_comment_tuple(:any, :comment_offset => 0)
+      expect(@tuple).to be_comment_tuple(:any, :comment_offset => 0)
     end
   end
 
@@ -370,13 +370,13 @@ describe 'Parsing a line' do
 
   describe 'with ""' do
     it 'should return a blank tuple' do
-      IniParse::Parser.parse_line('').should be_blank_tuple
+      expect(IniParse::Parser.parse_line('')).to be_blank_tuple
     end
   end
 
   describe 'with " "' do
     it 'should return a blank tuple' do
-      IniParse::Parser.parse_line(' ').should be_blank_tuple
+      expect(IniParse::Parser.parse_line(' ')).to be_blank_tuple
     end
   end
 end

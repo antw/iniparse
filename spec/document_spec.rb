@@ -3,28 +3,28 @@ require 'spec_helper'
 describe "IniParse::Document" do
   it 'should have a +lines+ reader' do
     methods = IniParse::Document.instance_methods.map { |m| m.to_sym }
-    methods.should include(:lines)
+    expect(methods).to include(:lines)
   end
 
   it 'should not have a +lines+ writer' do
     methods = IniParse::Document.instance_methods.map { |m| m.to_sym }
-    methods.should_not include(:lines=)
+    expect(methods).not_to include(:lines=)
   end
 
   it 'should delegate #[] to +lines+' do
     doc = IniParse::Document.new
-    doc.lines.should_receive(:[]).with('key')
+    expect(doc.lines).to receive(:[]).with('key')
     doc['key']
   end
 
   it 'should call #each to +lines+' do
     doc = IniParse::Document.new
-    doc.lines.should_receive(:each)
+    expect(doc.lines).to receive(:each)
     doc.each { |l| }
   end
 
   it 'should be enumerable' do
-    IniParse::Document.included_modules.should include(Enumerable)
+    expect(IniParse::Document.included_modules).to include(Enumerable)
 
     sections = [
       IniParse::Lines::Section.new('first section'),
@@ -34,7 +34,7 @@ describe "IniParse::Document" do
     doc = IniParse::Document.new
     doc.lines << sections[0] << sections[1]
 
-    doc.map { |line| line }.should == sections
+    expect(doc.map { |line| line }).to eq(sections)
   end
 
   describe '#has_section?' do
@@ -45,12 +45,12 @@ describe "IniParse::Document" do
     end
 
     it 'should return true if a section with the given key exists' do
-      @doc.should have_section('first section')
-      @doc.should have_section('another section')
+      expect(@doc).to have_section('first section')
+      expect(@doc).to have_section('another section')
     end
 
     it 'should return true if no section with the given key exists' do
-      @doc.should_not have_section('second section')
+      expect(@doc).not_to have_section('second section')
     end
   end
 
@@ -70,22 +70,22 @@ describe "IniParse::Document" do
     end
 
     it 'removes the section given a key' do
-      lambda { document.delete('first') }.
-        should change { document['first'] }.to(nil)
+      expect { document.delete('first') }.
+        to change { document['first'] }.to(nil)
     end
 
     it 'removes the section given a Section' do
-      lambda { document.delete(document['first']) }.
-        should change { document['first'] }.to(nil)
+      expect { document.delete(document['first']) }.
+        to change { document['first'] }.to(nil)
     end
 
     it 'removes the lines' do
-      lambda { document.delete('first') }.
-        should change { document.to_ini.match(/alpha/) }.to(nil)
+      expect { document.delete('first') }.
+        to change { document.to_ini.match(/alpha/) }.to(nil)
     end
 
     it 'returns the document' do
-      document.delete('first').should eql(document)
+      expect(document.delete('first')).to eql(document)
     end
   end
 
@@ -122,31 +122,31 @@ describe "IniParse::Document" do
     describe 'when no path is given to save' do
       it 'should save the INI document if a path was given when initialized' do
         doc = IniParse::Document.new('/a/path/to/a/file.ini')
-        File.should_receive(:open).with('/a/path/to/a/file.ini', 'w')
+        expect(File).to receive(:open).with('/a/path/to/a/file.ini', 'w')
         doc.save
       end
 
       it 'should raise IniParseError if no path was given when initialized' do
-        lambda { IniParse::Document.new.save }.should \
+        expect { IniParse::Document.new.save }.to \
           raise_error(IniParse::IniParseError)
       end
     end
 
     describe 'when a path is given to save' do
       it "should update the document's +path+" do
-        File.stub(:open).and_return(true)
+        allow(File).to receive(:open).and_return(true)
         doc = IniParse::Document.new('/a/path/to/a/file.ini')
         doc.save('/a/new/path.ini')
-        doc.path.should == '/a/new/path.ini'
+        expect(doc.path).to eq('/a/new/path.ini')
       end
 
       it 'should save the INI document to the given path' do
-        File.should_receive(:open).with('/a/new/path.ini', 'w')
+        expect(File).to receive(:open).with('/a/new/path.ini', 'w')
         IniParse::Document.new('/a/path/to/a/file.ini').save('/a/new/path.ini')
       end
 
       it 'should raise IniParseError if no path was given when initialized' do
-        lambda { IniParse::Document.new.save }.should \
+        expect { IniParse::Document.new.save }.to \
           raise_error(IniParse::IniParseError)
       end
     end

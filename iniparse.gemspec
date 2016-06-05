@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files  = %w(LICENSE README.rdoc)
 
   # Dependencies.
-  s.add_development_dependency('rspec', '~> 2.14')
+  s.add_development_dependency('rspec', '~> 3.4')
 
   # = MANIFEST =
   s.files = %w[
