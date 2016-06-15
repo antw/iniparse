@@ -2,6 +2,6 @@ language: ruby
 script: "bundle exec rspec"
 bundler_args: "--without extras"
 rvm:
-  - "2.1.0"
-  - "1.9.3"
-  - "jruby-19mode"
+  - 2.2
+  - 2.1
+  - jruby-19mode
