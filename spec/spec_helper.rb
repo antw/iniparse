@@ -26,7 +26,7 @@ module IniParse
           "expected #{@expected} but got #{@target.class}"
         end
 
-        def negative_failure_message
+        def failure_message_when_negated
           "expected #{@expected} to not be #{@target.class}"
         end
 
@@ -68,7 +68,7 @@ module IniParse
           "expected #{@expected_type} tuple #{@failure_message}"
         end
 
-        def negative_failure_message
+        def failure_message_when_negated
           "expected #{@tuple.inspect} to not be #{@expected_type} tuple"
         end
 

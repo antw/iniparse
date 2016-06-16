@@ -45,18 +45,18 @@ describe "IniParse" do
   end
 
   describe '.open' do
-    before(:each) { File.stub(:read).and_return('[section]') }
+    before(:each) { allow(File).to receive(:read).and_return('[section]') }
 
     it 'should return an IniParse::Document' do
-      IniParse.open('/my/path.ini').should be_kind_of(IniParse::Document)
+      expect(IniParse.open('/my/path.ini')).to be_kind_of(IniParse::Document)
     end
 
     it 'should set the path on the returned Document' do
-      IniParse.open('/my/path.ini').path.should == '/my/path.ini'
+      expect(IniParse.open('/my/path.ini').path).to eq('/my/path.ini')
     end
 
     it 'should read the file at the given path' do
-      File.should_receive(:read).with('/my/path.ini').and_return('[section]')
+      expect(File).to receive(:read).with('/my/path.ini').and_return('[section]')
       IniParse.open('/my/path.ini')
     end
   end

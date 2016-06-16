@@ -13,17 +13,17 @@ require 'spec_helper'
 describe 'When generating a document using Generator with section blocks,' do
 
   it 'should be able to compile an empty document' do
-    lambda { IniParse::Generator.gen { |doc| } }.should_not raise_error
+    expect { IniParse::Generator.gen { |doc| } }.not_to raise_error
   end
 
   it 'should raise LocalJumpError if no block is given' do
-    lambda { IniParse::Generator.gen }.should raise_error(LocalJumpError)
+    expect { IniParse::Generator.gen }.to raise_error(LocalJumpError)
   end
 
   it "should yield an object with generator methods" do
     IniParse::Generator.gen do |doc|
       %w( section option comment blank ).each do |meth|
-        doc.should respond_to(meth)
+        expect(doc).to respond_to(meth)
       end
     end
   end
@@ -39,23 +39,23 @@ describe 'When generating a document using Generator with section blocks,' do
       IniParse::Generator.gen do |doc|
         doc.section("a section") do |section|
           %w( option comment blank ).each do |meth|
-            section.should respond_to(meth)
+            expect(section).to respond_to(meth)
           end
         end
       end
     end
 
     it 'should add a Section to the document' do
-      IniParse::Generator.gen do |doc|
+      expect(IniParse::Generator.gen do |doc|
         doc.section("a section") { |section| }
-      end.should have_section("a section")
+      end).to have_section("a section")
     end
 
     it 'should change the Generator context to the section during the section block' do
       IniParse::Generator.gen do |doc|
         doc.section("a section") do |section|
-          section.context.should be_kind_of(IniParse::Lines::Section)
-          section.context.key.should == "a section"
+          expect(section.context).to be_kind_of(IniParse::Lines::Section)
+          expect(section.context.key).to eq("a section")
         end
       end
     end
@@ -63,7 +63,7 @@ describe 'When generating a document using Generator with section blocks,' do
     it 'should reset the Generator context to the document after the section block' do
       IniParse::Generator.gen do |doc|
         doc.section("a section") { |section| }
-        doc.context.should be_kind_of(IniParse::Document)
+        expect(doc.context).to be_kind_of(IniParse::Document)
       end
     end
 
@@ -72,7 +72,7 @@ describe 'When generating a document using Generator with section blocks,' do
         doc.section("a section") { |section| }
       end
 
-      document["a section"].to_ini.should match(/\A    /)
+      expect(document["a section"].to_ini).to match(/\A    /)
     end
 
     it 'should pass extra options to the Section instance' do
@@ -80,23 +80,23 @@ describe 'When generating a document using Generator with section blocks,' do
         doc.section("a section", :indent => '    ') { |section| }
       end
 
-      document["a section"].to_ini.should match(/\A    /)
+      expect(document["a section"].to_ini).to match(/\A    /)
     end
 
     it 'should append a blank line to the document, after the section' do
-      IniParse::Generator.gen do |doc|
+      expect(IniParse::Generator.gen do |doc|
         doc.section("a section") { |section| }
-      end.lines.to_a.last.should be_kind_of(IniParse::Lines::Blank)
+      end.lines.to_a.last).to be_kind_of(IniParse::Lines::Blank)
     end
 
     it 'should raise a LineNotAllowed if you attempt to nest a section' do
-      lambda do
+      expect do
         IniParse::Generator.gen do |doc|
           doc.section("a section") do |section_one|
             section_one.section("another_section") { |section_two| }
           end
         end
-      end.should raise_error(IniParse::LineNotAllowed)
+      end.to raise_error(IniParse::LineNotAllowed)
     end
   end
 
@@ -114,7 +114,7 @@ describe 'When generating a document using Generator with section blocks,' do
           doc.option("my option", "a value")
         end
 
-        document['__anonymous__']['my option'].should eql('a value')
+        expect(document['__anonymous__']['my option']).to eql('a value')
       end
     end
 
@@ -127,8 +127,8 @@ describe 'When generating a document using Generator with section blocks,' do
         end
 
         section = document["a section"]
-        section.should have_option("my option")
-        section["my option"].should == "a value"
+        expect(section).to have_option("my option")
+        expect(section["my option"]).to eq("a value")
       end
 
       it 'should pass extra options to the Option instance' do
@@ -138,7 +138,7 @@ describe 'When generating a document using Generator with section blocks,' do
           end
         end
 
-        document["a section"].option("my option").to_ini.should match(/^    /)
+        expect(document["a section"].option("my option").to_ini).to match(/^    /)
       end
 
       it "should use the parent document's options as a base" do
@@ -148,7 +148,7 @@ describe 'When generating a document using Generator with section blocks,' do
           end
         end
 
-        document["a section"].option("my option").to_ini.should match(/^    /)
+        expect(document["a section"].option("my option").to_ini).to match(/^    /)
       end
 
       it "should use the parent section's options as a base" do
@@ -158,7 +158,7 @@ describe 'When generating a document using Generator with section blocks,' do
           end
         end
 
-        document["a section"].option("my option").to_ini.should match(/^    /)
+        expect(document["a section"].option("my option").to_ini).to match(/^    /)
       end
 
       it "should allow customisation of the parent's options" do
@@ -171,8 +171,8 @@ describe 'When generating a document using Generator with section blocks,' do
         end
 
         option_ini = document["a section"].option("my option").to_ini
-        option_ini.should match(/^    /)
-        option_ini.should match(/ # a comment/)
+        expect(option_ini).to match(/^    /)
+        expect(option_ini).to match(/ # a comment/)
       end
 
       it "should not use the parent section's comment when setting line options" do
@@ -182,7 +182,7 @@ describe 'When generating a document using Generator with section blocks,' do
           end
         end
 
-        document["a section"].option("my option").to_ini.should_not match(/My section$/)
+        expect(document["a section"].option("my option").to_ini).not_to match(/My section$/)
       end
     end
   end
@@ -199,7 +199,7 @@ describe 'When generating a document using Generator with section blocks,' do
         doc.comment("My comment", :indent => '    ')
       end
 
-      document.lines.to_a.first.to_ini.should match(/\A    /)
+      expect(document.lines.to_a.first.to_ini).to match(/\A    /)
     end
 
     it 'should ignore any extra :comment option' do
@@ -207,8 +207,8 @@ describe 'When generating a document using Generator with section blocks,' do
         doc.comment("My comment", :comment => 'Ignored')
       end
 
-      document.lines.to_a.first.to_ini.should match(/My comment/)
-      document.lines.to_a.first.to_ini.should_not match(/Ignored/)
+      expect(document.lines.to_a.first.to_ini).to match(/My comment/)
+      expect(document.lines.to_a.first.to_ini).not_to match(/Ignored/)
     end
 
     describe 'when the context is a Document' do
@@ -218,8 +218,8 @@ describe 'When generating a document using Generator with section blocks,' do
         end
 
         comment = document.lines.to_a.first
-        comment.should be_kind_of(IniParse::Lines::Comment)
-        comment.to_ini.should match(/My comment/)
+        expect(comment).to be_kind_of(IniParse::Lines::Comment)
+        expect(comment.to_ini).to match(/My comment/)
       end
 
       it 'should use the default line options as a base' do
@@ -230,7 +230,7 @@ describe 'When generating a document using Generator with section blocks,' do
         comment_ini = document.lines.to_a.first.to_ini
 
         # Match separator (;) and offset (0).
-        comment_ini.should == '; My comment'
+        expect(comment_ini).to eq('; My comment')
       end
     end
 
@@ -243,8 +243,8 @@ describe 'When generating a document using Generator with section blocks,' do
         end
 
         comment = document['a section'].lines.to_a.first
-        comment.should be_kind_of(IniParse::Lines::Comment)
-        comment.to_ini.should match(/My comment/)
+        expect(comment).to be_kind_of(IniParse::Lines::Comment)
+        expect(comment.to_ini).to match(/My comment/)
       end
 
       it "should use the parent document's line options as a base" do
@@ -254,7 +254,7 @@ describe 'When generating a document using Generator with section blocks,' do
           end
         end
 
-        document['a section'].lines.to_a.first.to_ini.should match(/^     ;/)
+        expect(document['a section'].lines.to_a.first.to_ini).to match(/^     ;/)
       end
 
       it "should use the parent section's line options as a base" do
@@ -264,7 +264,7 @@ describe 'When generating a document using Generator with section blocks,' do
           end
         end
 
-        document['a section'].lines.to_a.first.to_ini.should match(/^     ;/)
+        expect(document['a section'].lines.to_a.first.to_ini).to match(/^     ;/)
       end
 
       it "should allow customisation of the parent's options" do
@@ -275,8 +275,8 @@ describe 'When generating a document using Generator with section blocks,' do
         end
 
         # Match separator (#) and offset (5)
-        document['a section'].lines.to_a.first.to_ini.should \
-          == '     # My comment'
+        expect(document['a section'].lines.to_a.first.to_ini).to \
+          eq('     # My comment')
       end
 
       it "should not use the parent section's comment when setting line options" do
@@ -287,8 +287,8 @@ describe 'When generating a document using Generator with section blocks,' do
         end
 
         comment_ini = document['a section'].lines.to_a.first.to_ini
-        comment_ini.should match(/My comment/)
-        comment_ini.should_not match(/My section/)
+        expect(comment_ini).to match(/My comment/)
+        expect(comment_ini).not_to match(/My section/)
       end
     end
   end
@@ -305,7 +305,7 @@ describe 'When generating a document using Generator with section blocks,' do
         doc.blank
       end
 
-      document.lines.to_a.first.should be_kind_of(IniParse::Lines::Blank)
+      expect(document.lines.to_a.first).to be_kind_of(IniParse::Lines::Blank)
     end
 
     it 'should add a blank line to the section when it is the context' do
@@ -315,7 +315,7 @@ describe 'When generating a document using Generator with section blocks,' do
         end
       end
 
-      document['a section'].lines.to_a.first.should be_kind_of(IniParse::Lines::Blank)
+      expect(document['a section'].lines.to_a.first).to be_kind_of(IniParse::Lines::Blank)
     end
   end
 
