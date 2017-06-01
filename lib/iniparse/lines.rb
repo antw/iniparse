@@ -11,6 +11,7 @@ module IniParse
         @comment_prefix = opts.fetch(:comment_prefix, ' ')
         @comment_offset = opts.fetch(:comment_offset, 0)
         @indent         = opts.fetch(:indent, '')
+        @option_sep     = opts.fetch(:option_sep, nil)
       end
 
       # Returns if this line has an inline comment.
@@ -54,7 +55,8 @@ module IniParse
           comment_sep: @comment_sep,
           comment_prefix: @comment_prefix,
           comment_offset: @comment_offset,
-          indent: @indent
+          indent: @indent,
+          option_sep: @option_sep
         }
       end
     end
@@ -248,9 +250,9 @@ module IniParse
     class Option
       include Line
 
-      @regex = /^\s*([^=]+)  # Option
-                 =
-                 (.*?)$      # Value
+      @regex = /^\s*([^=]+?)  # Option, not greedy
+                 (\s*=\s*)    # Separator, greedy
+                 (.*?)$       # Value
                /x
 
       attr_accessor :key, :value
@@ -263,11 +265,13 @@ module IniParse
       def initialize(key, value, opts = {})
         super(opts)
         @key, @value = key.to_s, value
+        @option_sep = opts.fetch(:option_sep, ' = ')
       end
 
       def self.parse(line, opts)
         if m = @regex.match(line)
-          [:option, m[1].strip, typecast(m[2].strip), opts]
+          opts[:option_sep] = m[2]
+          [:option, m[1].strip, typecast(m[3].strip), opts]
         end
       end
 
@@ -291,9 +295,9 @@ module IniParse
       # because of options key duplication
       def line_contents
         if value.kind_of?(Array)
-          value.map { |v, i| "#{key} = #{v}" }
+          value.map { |v, i| "#{key}#{@option_sep}#{v}" }
         else
-          "#{key} = #{value}"
+          "#{key}#{@option_sep}#{value}"
         end
       end
     end

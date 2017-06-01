@@ -111,7 +111,7 @@ module IniParse
     include LineCollection
 
     def <<(line)
-      if line.kind_of?(IniParse::Lines::Option)
+      if line.kind_of?(IniParse::Lines::Option) || (has_key?('__anonymous__') && (line.blank? || line.kind_of?(IniParse::Lines::Comment)))
         option = line
         line   = IniParse::Lines::AnonymousSection.new
 

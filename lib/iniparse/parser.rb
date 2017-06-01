@@ -29,7 +29,7 @@ module IniParse
     # source<String>:: The source string.
     #
     def initialize(source)
-      @source = source.dup
+      @source = source.dup.sub(/\n\z/,'')
     end
 
     # Parses the source string and returns the resulting data structure.
@@ -88,8 +88,6 @@ module IniParse
             line[(m[1].length..-1)].index(m[2]) + m[1].length
 
           line = m[1]
-        else
-          line.rstrip!
         end
 
         [line, opts]
