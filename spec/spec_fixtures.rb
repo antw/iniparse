@@ -74,3 +74,19 @@ IniParse::Test::Fixtures[:duplicate_section] = <<-FIX.gsub(/^  /, '')
   third = fourth
   another = again
 FIX
+
+# https://github.com/antw/iniparse/issues/17
+IniParse::Test::Fixtures[:anon_section_with_comments] = <<-FIX.gsub(/^  /, '')
+  #####################
+  # A lot of comments #
+  #####################
+
+  # optiona comment
+  optiona = A
+
+  # optionb comment
+  optionb = B
+
+  # optionc comment
+  optionc = C
+FIX
