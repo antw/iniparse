@@ -182,4 +182,13 @@ describe "IniParse" do
       expect(IniParse.parse(@fixture).to_ini).to eq(@fixture)
     end
   end
+
+  describe 'anonymous-order.ini fixture' do
+    # https://github.com/antw/iniparse/issues/17
+    let(:raw) { fixture(:anon_section_with_comments) }
+
+    it 'should be identical to the original when calling #to_ini' do
+      expect(IniParse.parse(raw).to_ini).to eq(raw)
+    end
+  end
 end

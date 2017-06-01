@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   ## the sub! line in the Rakefile
   s.name              = 'iniparse'
   s.version           = '1.4.3'
-  s.date              = '2017-05-31'
+  s.date              = '2017-06-01'
   s.rubyforge_project = 'iniparse'
 
   s.summary           = 'A pure Ruby library for parsing INI documents.'
