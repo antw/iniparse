@@ -90,3 +90,14 @@ IniParse::Test::Fixtures[:anon_section_with_comments] = <<-FIX.gsub(/^  /, '')
   # optionc comment
   optionc = C
 FIX
+
+# https://github.com/antw/iniparse/issues/6
+IniParse::Test::Fixtures[:multiline_result] = <<-FIX.gsub(/^  /, '')
+# comment 1
+[test]
+opt = 1 \\\\
+var1 = this is a multiline value # these comments will be ignored  by the parser
+var2 = "this is also
+multiline
+value" # comment in multiline
+FIX

@@ -72,6 +72,34 @@ Options which appear before the first section will be added to a section called
     document['driver']['key']
       # => 'value'
 
+=== Multi-Line Values
+
+Values can be continued onto multiple lines in two separate ways. Putting a
+backslash at the end of a line will continue the value declaration to the next
+line. When parsing, the trailing slash will be consumed and **will not**
+appear in the resulting value. Comments can appear to the right of the
+trailing backslash. Unless comment is present backslash must be the last 
+character in the line
+
+    var1 = this is a \  # these comments will
+    multiline value     # be ignored by the parser
+
+In the above example the resulting value for `var1` will be `this is a
+multiline value`.
+Note that this kind of multilines are not preserved, when wiritting file back.
+The above example will become a one line when saving file:
+
+    var1 = this is a multiline value # these comments will be ignored by the parser
+ 
+If you want to preserve newline characters in the value then
+quotations should be used.
+
+    var2 = "this is a
+    multiline value" # Here you can put your comment
+
+The resulting value for `var2` will be `"this is a\nmultiline value"`.
+
+
 === Updating an INI file
 
     document['a_section']['an_option']
