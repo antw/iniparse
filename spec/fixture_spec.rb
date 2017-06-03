@@ -191,4 +191,16 @@ describe "IniParse" do
       expect(IniParse.parse(raw).to_ini).to eq(raw)
     end
   end
+
+  describe 'multiline.ini fixture' do
+    # https://github.com/antw/iniparse/issues/6
+    before(:all) do
+      @fixture = fixture('multiline.ini')
+      @result = fixture(:multiline_result)
+    end
+
+    it 'should be identical to expected result when calling #to_ini' do
+      expect(IniParse.parse(@fixture).to_ini).to eq(@result)
+    end
+  end
 end

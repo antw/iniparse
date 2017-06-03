@@ -1,4 +1,7 @@
 module IniParse
+  @@multiline = false
+  @@ml_current = nil
+  @@ml_join = nil
   class Parser
 
     # Returns the line types.
@@ -29,7 +32,8 @@ module IniParse
     # source<String>:: The source string.
     #
     def initialize(source)
-      @source = source.dup.sub(/\n\z/,'')
+      @source = source.dup.sub(/\n\z/m,'')
+      @@multiline = false
     end
 
     # Parses the source string and returns the resulting data structure.
@@ -40,7 +44,8 @@ module IniParse
     def parse
       IniParse::Generator.gen do |generator|
         @source.split("\n", -1).each do |line|
-          generator.send(*Parser.parse_line(line))
+          parsed = Parser.parse_line(line)
+          generator.send(*parsed) unless @@multiline
         end
       end
     end
@@ -62,9 +67,35 @@ module IniParse
         end
 
         if parsed.nil?
-          raise IniParse::ParseError,
-            "A line of your INI document could not be parsed to a " \
-            "LineType: '#{line}'."
+          if @@multiline
+            parsed = @@ml_current
+            parsed[2] << "#{@@ml_join}#{sanitized}"
+            if @@ml_join == ''
+              parsed[3][:comment] << "#{opts[:comment_prefix]}#{opts[:comment]}"
+            else
+              parsed[3] = opts
+            end
+            @@multiline = false
+            @@ml_current = nil
+            @@ml_join = nil
+          else
+            raise IniParse::ParseError,
+              "A line of your INI document could not be parsed to a " \
+              "LineType: '#{line}'."
+          end
+        end
+
+        if parsed[0] == :option && parsed[2].kind_of?(String)
+          if parsed[2][-1,1] == '\\' && parsed[2][-2,2] != '\\\\'
+            parsed[2].slice!(-1,1)
+            @@multiline = true
+            @@ml_current = parsed
+            @@ml_join = ''
+          elsif /^("[^"]*)\z/.match(parsed[2])
+            @@multiline = true
+            @@ml_current = parsed
+            @@ml_join = "\n"
+          end
         end
 
         parsed
