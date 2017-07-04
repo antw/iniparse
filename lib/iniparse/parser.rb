@@ -64,7 +64,7 @@ module IniParse
         if parsed.nil?
           raise IniParse::ParseError,
             "A line of your INI document could not be parsed to a " \
-            "LineType: '#{line}'."
+            "LineType: #{line.inspect}."
         end
 
         parsed
