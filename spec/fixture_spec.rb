@@ -183,6 +183,31 @@ describe "IniParse" do
     end
   end
 
+  describe 'DOS line endings' do
+    before(:all) do
+      @fixture = fixture(:dos_endings)
+    end
+
+    it 'should have the correct sections' do
+      expect(IniParse.parse(@fixture).lines.keys).to eq(%w[database])
+    end
+
+    it 'should have the correct options' do
+      # Test the keys from one section.
+      doc     = IniParse.parse(@fixture)
+      section = doc['database']
+
+      expect(section.lines.keys).to eq(%w[first second])
+
+      expect(section['first']).to eq(true)
+      expect(section['second']).to eq(false)
+    end
+
+    pending 'should be identical to the original when calling #to_ini' do
+      expect(IniParse.parse(@fixture).to_ini).to eq(@fixture)
+    end
+  end
+
   describe 'anonymous-order.ini fixture' do
     # https://github.com/antw/iniparse/issues/17
     let(:raw) { fixture(:anon_section_with_comments) }

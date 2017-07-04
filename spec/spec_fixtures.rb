@@ -75,6 +75,11 @@ IniParse::Test::Fixtures[:duplicate_section] = <<-FIX.gsub(/^  /, '')
   another = again
 FIX
 
+IniParse::Test::Fixtures[:dos_endings] =
+  "[database]\r\n" \
+  "first = true\r\n" \
+  "second = false\r\n"
+
 # https://github.com/antw/iniparse/issues/17
 IniParse::Test::Fixtures[:anon_section_with_comments] = <<-FIX.gsub(/^  /, '')
   #####################
