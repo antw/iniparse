@@ -14,7 +14,6 @@ Gem::Specification.new do |s|
   s.name              = 'iniparse'
   s.version           = '1.4.4'
   s.date              = '2017-07-04'
-  s.rubyforge_project = 'iniparse'
 
   s.summary           = 'A pure Ruby library for parsing INI documents.'
   s.authors           = ['Anthony Williams']
