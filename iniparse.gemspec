@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = 'iniparse'
-  s.version           = '1.4.4'
-  s.date              = '2017-07-04'
+  s.version           = '1.5.0'
+  s.date              = '2020-02-27'
 
   s.summary           = 'A pure Ruby library for parsing INI documents.'
   s.authors           = ['Anthony Williams']
@@ -35,6 +35,7 @@ Gem::Specification.new do |s|
 
   # = MANIFEST =
   s.files = %w[
+    CHANGELOG.md
     Gemfile
     LICENSE
     README.rdoc

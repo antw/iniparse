@@ -1,4 +1,4 @@
-### HEAD
+### 1.5.0
 
 * OptionCollection no longer yields duplicate keys as an array, but instead yields each key in turn.
 
