@@ -57,6 +57,8 @@ module IniParse
     # include_blank<Boolean>:: Include blank/comment lines?
     #
     def each(include_blank = false)
+      return enum_for(:each, include_blank) unless block_given?
+
       @lines.each do |line|
         if include_blank || ! (line.is_a?(Array) ? line.empty? : line.blank?)
           yield(line)
@@ -162,6 +164,8 @@ module IniParse
     end
 
     def each(*args)
+      return enum_for(:each, *args) unless block_given?
+
       super(*args) do |value|
         if value.is_a?(Array)
           value.each { |item| yield(item) }

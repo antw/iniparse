@@ -23,3 +23,19 @@
 
     doc['test']['a']
     # => [1, 2]
+
+* LineCollection#each may be called without a block, returning an Enumerator.
+
+    doc = IniParse.parse(<<~EOF)
+      [test]
+      a = x
+      b = y
+    EOF
+
+    doc[test].each
+    # => #<Enumerator: ...>
+
+  This allows for chaining as in the standard library:
+
+    doc['test'].map.with_index { |a, i| { index: i, value: a.value } }
+    # => [{ index: 0, value: 'x' }, { index: 1, value: 'y' }]
