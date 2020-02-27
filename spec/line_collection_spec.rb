@@ -185,6 +185,22 @@ describe 'IniParse::OptionCollection' do
       expect(@collection.keys).to eq(['first', 'second', 'third'])
     end
   end
+
+  context 'with duplicate lines' do
+    let(:collection) { IniParse::OptionCollection.new }
+
+    let(:opt_1) { IniParse::Lines::Option.new('my_key', 'value_1') }
+    let(:opt_2) { IniParse::Lines::Option.new('my_key', 'value_2') }
+
+    before do
+      collection << opt_1
+      collection << opt_2
+    end
+
+    it 'yields each item in turn' do
+      expect { |b| collection.each(&b) }.to yield_successive_args(opt_1, opt_2)
+    end
+  end
 end
 
 describe 'IniParse::SectionCollection' do

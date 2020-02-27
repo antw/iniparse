@@ -161,10 +161,20 @@ module IniParse
       self
     end
 
+    def each(*args)
+      super(*args) do |value|
+        if value.is_a?(Array)
+          value.each { |item| yield(item) }
+        else
+          yield value
+        end
+      end
+    end
+
     # Return an array containing the keys for the lines added to this
     # collection.
     def keys
-      map { |line| line.kind_of?(Array) ? line.first.key : line.key }
+      map(&:key).uniq
     end
   end
 end
